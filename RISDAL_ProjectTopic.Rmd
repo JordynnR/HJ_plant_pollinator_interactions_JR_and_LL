@@ -1,19 +1,18 @@
 ---
-title: "RISDAL_ProjectTopic"
+title: "JR_LL_ProjectTopic"
 output: html_document
 date: "2025-10-18"
 ---
 ## R Markdown
+Jordynn Risdal and Lily Lawrence
 BI410L: Data Science in Ecology and Conservation
 October 17, 2025
 
-General topic: plant-pollinator interactions, with respect to native and non-native species
+General topic: plant-pollinator interactions, with respect to native and non-native species, in high-elevation meadows
 
 Questions:
-Do native bees more often visit native or non-native plants?
-Do non-native bees more often visit native or non-native plants?
-Does this relationship change over the months and/or over the years?
+What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native?
+Do non-native bees compete with native bees for access to native plants in these meadows?
+How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
 
-Other datasets: We can use PRISM climate data for Oregon if we need to https://prism.oregonstate.edu/
-
-Partner: Lily Lawrence
+Dataset: We are using the HJ Andrews dataset that records species interactions between plants and pollinators in high elevation meadows.
