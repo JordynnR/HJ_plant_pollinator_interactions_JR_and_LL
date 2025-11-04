@@ -1,0 +1,19 @@
+---
+title: "RISDAL_ProjectTopic"
+output: html_document
+date: "2025-10-18"
+---
+## R Markdown
+BI410L: Data Science in Ecology and Conservation
+October 17, 2025
+
+General topic: plant-pollinator interactions, with respect to native and non-native species
+
+Questions:
+Do native bees more often visit native or non-native plants?
+Do non-native bees more often visit native or non-native plants?
+Does this relationship change over the months and/or over the years?
+
+Other datasets: We can use PRISM climate data for Oregon if we need to https://prism.oregonstate.edu/
+
+Partner: Lily Lawrence
