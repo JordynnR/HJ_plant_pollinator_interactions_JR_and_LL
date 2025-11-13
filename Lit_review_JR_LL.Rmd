@@ -4,7 +4,20 @@ output: html_document
 date: "2025-11-06"
 ---
 START HERE
+Paragraph 1: problem & significance 
 
+Paragraph 2: past work and data available (findings and gaps)
+
+Paragraph 3: Purpose & hypotheses (directional)
+Questions:
+What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native?
+Do non-native bees compete with native bees for access to native plants in these meadows?
+How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
+
+Hypothese/ Predictions:
+We predict...
+
+Paragraph 4: Workflow plan (data, analysis, visualisations)
 
 
 
