@@ -11,8 +11,8 @@ a. Get rid of unneeded columns- Temp stuff, wind stuff, , unique ID??, collector
 b. Get rid of rows that have empty plant or bee genus species (or not, maybe genus enough for some bees?)
 
 Step 3: add two columns to identify both bee species and plant species as native or non-native (1 for native, 0 for non-native). We use Calflora and Oregon flora to determine native plant species and Lauren gave us list of most common non-native bee species.
-a. use a for loop- if bee species is one of the listed non-natives, mark 0 for that row, or else mark 1
-b. can use a for loop- if plant species matches "genus species", mark as either 0 or 1, depending on if that species is native or non-native
+a. Use a for loop- if bee species is one of the listed non-natives, mark 0 for that row, or else mark 1
+b. Can use a for loop- if plant species matches "genus species", mark as either 0 or 1, depending on if that species is native or non-native
 
 Step 4: start analysis
 A. Group all native and non-native bees to see if there is a difference in abundance overall
