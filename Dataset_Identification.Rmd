@@ -1,0 +1,20 @@
+---
+title: "Dataset_identification"
+output: html_document
+date: "2025-11-14"
+---
+Primary dataset:
+HJ Andrews plant-pollinator interactions
+This data was collected in high-elevation meadows in the HJ Andrews experimental forest. It includes pollinator observations at different plant focals and data on focal plant and pollinator taxonomy, date of observations, site and plot of observations, and much more. We will primarily be using the identification of plants and pollinators and the date of observations.
+
+Other Datasets:
+https://oregonflora.org/ 
+https://www.calflora.org/ 
+- We will use Oregon Flora and Calflora to help us identify which plants are native and non-native
+- We will create 2 new columns to include this data: 1 for whether the observed bee is native and one for whether the focal plant is native.
+
+We also have a list of the most common non-native bee species:
+Apis mellifera (European honey bee)
+Megachile rotundata (alfalfa leafcutting bee)
+Anthidium manicatum (European wool-carder bee)
+Osmia cornifrons (horned-faced/orchard mason bee)
