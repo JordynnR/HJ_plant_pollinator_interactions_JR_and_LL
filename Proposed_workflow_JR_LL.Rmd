@@ -3,58 +3,46 @@ title: "Proposed_workflow_JR_LL"
 output: html_document
 date: "2025-11-06"
 ---
-Workflow-    how we’ll implement it
-Step 1: Convert to csv and read in
+
+Step 1: Convert excel file of HJ Andrews dataset into a csv and read in to R
 
 Step 2: Clean data
 a. Get rid of unneeded columns- Temp stuff, wind stuff, , unique ID??, collector, order, family, subgenus, determiner, author, 
 b. Get rid of rows that have empty plant or bee genus species (or not, maybe genus enough for some bees?)
 
-Step 3: add column for native or non-native for both bees and plants
+Step 3: add two columns to identify both bee species and plant species as native or non-native (1 for native, 0 for non-native). We use Calflora and Oregon flora to determine native plant species and Lauren gave us list of most common non-native bee species.
+a. use a for loop- if bee species is one of the listed non-natives, mark 0 for that row, or else mark 1
+b. can use a for loop- if plant species matches "genus species", mark as either 0 or 1, depending on if that species is native or non-native
 
 Step 4: start analysis
-A. Group by site and abundances of native/non-natives for plants and bees
-Determine if there is a difference between sites- how???
+A. Group all native and non-native bees to see if there is a difference in abundance overall
+- Compare number of rows with native bees to number of rows with non-native bees
+- If there is little non-native abundance, our question 2 about competition between native and non-native bees may not be interesting for us.
+- If there are still plenty of non-native bees, we can group by plants with and without non-native bee presence and compare to see if there is a difference in native bee abundance. This would be for question 2.
+- - AB test??
 
-B. Group all native and non-native bees to see if there is a difference in abundance overall
-If little non-native abundance, may not have question 2 answered or may not be significant
-If yes- separate by plants with non-native presence and see if less native bee abundance to see if competition for native plants exists here
+B. Create interaction network to visualize interactions between all plant and bee species
+- Also group native plants and non-native plants and group native bees and non-native bees and create interaction network between groups to see if we can see a clear difference in strength of interactions. This would be for question 1 about how strongly native bees associate with native vs. non-native plants.
+- Probably use Sankey interaction network
 
-c. AB test: Test statistic at both native and non-native plants (A and B groups) to see if there is a significant difference in native bee association with native vs non plants
+C. AB test:
+- Null hypothesis: there is no difference in native bee abundance between between native and non-native plants.
+- Alternative hypothesis: there is higher native bee abundance at native plants than non-native plants.
+- Groups are native and non-native plants
+- Test statistic is the difference in mean abundances of native bees observed at native vs. non-native plants
+- labels of native and non-native plants would be shuffled and test statistic recalculated to generate a histogram and p-value to determine if there is a significant difference between groups
+- we will need a function to calculate the test statistic:
+- - it will group by native and non-native plants to calculate the abundance of native bee visits at each.
+- - it will then calculate the difference between those abundances and that is the test statistic
+- we will need a second function that uses the first function to run a permutation test:
+- - it will reshuffle the native plant and non-native plant labels and re-run the above function to generate a new statistic
+- we will then need a for loop to run the AB test:
+- - it will take the second function to reshuffle and re-run the test statistic over a number of loops to generate a vector of statistics
+- we will then plot these statistics and compare the observed statistic to the histogram to see if there is a significant difference between the two groups (native and non-native plants).
+- this will also be for question 1.
 
-D. Sankey interaction network- all plants and bees??- see strongest interactions
-Group native plants and non-native plants and native bees and non-native bees and see interactions/interaction quantity b/w groups
+D. Create boxplots of non-native plant abundances by month; create boxplots of native plant abundances by month
+- This could help tell us if there is a change in the type of flora available to native bees over the course of the year. This would be for question 3, which asks if there is a change in what kinds of plants native bees associate with over the course of the year.
 
-E. Create boxplots of non-native vs native plant abundances by month
-Two separate graphs
-
-F. AB tests?? Grouped sankey networks?? Over time
-
-
-
-Also need functions/loops:
-
-
-Unit tests:
-need to have unit tests to test that functions work
-unique(table$column)- check for the right number of categories in column after filtering
-
-
-
-Expected Visualizations:
-Questions 1 & 2: 
-Sankey for network visual??- compare quantity of native bee interactions with natives vs non-natives overall
-Compare native-native to non-native bee to native interactions
-
-Compare abundances of native to non-native bees?? Is there a significant non-native bee presence
-Is there a difference between sites?
-
-
-Question 3: 
-box plots of non-native plant abundances over time, 
-(associations of native bees with non-natives over time, and with native plants over time)
-How to visualize associations??? Just interaction networks??- some sort of quantifying?? Can we quantify from interaction networks
-
-
-
-
+E. Create boxplots of native bee abundance at native plants over the months and create boxplots of native bee abundance at non-native plants over the months.
+- this would help us visualize whether native bees change their food sources over time as non-native plants may become more abundant while native plants become less abundant.
