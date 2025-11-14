@@ -3,8 +3,58 @@ title: "Proposed_workflow_JR_LL"
 output: html_document
 date: "2025-11-06"
 ---
+Workflow-    how we’ll implement it
+Step 1: Convert to csv and read in
 
-for now: 
-work on this workflow
-figure out analyses
-clean data
+Step 2: Clean data
+a. Get rid of unneeded columns- Temp stuff, wind stuff, , unique ID??, collector, order, family, subgenus, determiner, author, 
+b. Get rid of rows that have empty plant or bee genus species (or not, maybe genus enough for some bees?)
+
+Step 3: add column for native or non-native for both bees and plants
+
+Step 4: start analysis
+A. Group by site and abundances of native/non-natives for plants and bees
+Determine if there is a difference between sites- how???
+
+B. Group all native and non-native bees to see if there is a difference in abundance overall
+If little non-native abundance, may not have question 2 answered or may not be significant
+If yes- separate by plants with non-native presence and see if less native bee abundance to see if competition for native plants exists here
+
+c. AB test: Test statistic at both native and non-native plants (A and B groups) to see if there is a significant difference in native bee association with native vs non plants
+
+D. Sankey interaction network- all plants and bees??- see strongest interactions
+Group native plants and non-native plants and native bees and non-native bees and see interactions/interaction quantity b/w groups
+
+E. Create boxplots of non-native vs native plant abundances by month
+Two separate graphs
+
+F. AB tests?? Grouped sankey networks?? Over time
+
+
+
+Also need functions/loops:
+
+
+Unit tests:
+need to have unit tests to test that functions work
+unique(table$column)- check for the right number of categories in column after filtering
+
+
+
+Expected Visualizations:
+Questions 1 & 2: 
+Sankey for network visual??- compare quantity of native bee interactions with natives vs non-natives overall
+Compare native-native to non-native bee to native interactions
+
+Compare abundances of native to non-native bees?? Is there a significant non-native bee presence
+Is there a difference between sites?
+
+
+Question 3: 
+box plots of non-native plant abundances over time, 
+(associations of native bees with non-natives over time, and with native plants over time)
+How to visualize associations??? Just interaction networks??- some sort of quantifying?? Can we quantify from interaction networks
+
+
+
+
