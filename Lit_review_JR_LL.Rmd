@@ -3,19 +3,70 @@ title: "Lit_review_JR_LL"
 output: html_document
 date: "2025-11-06"
 ---
-START HERE
-Paragraph 1: problem & significance 
 
-Paragraph 2: past work and data available (findings and gaps)
+figure out where to put these:
+Abdallah- coexisting flower pairs, assess which native and non-native plants shared pollinators
+Kaiser- honeybee dominance why? Not what they treated for- 
 
-Paragraph 3: Purpose & hypotheses (directional)
-Questions:
+
+Intro problem and why:     lots of big pictures citations (reviews)         1P    -maybe 2???
+Set stage for problem                             funnel- broad into local (high elevation meadows)
+Put concept and question into context
+
+Traveset- lit review surrounding biological invasions and their impact on native plant mutualisms
+Morales- non-native plants affect pollinator visitation/reproductive success of native plants
+Paini- different pollinators limited by different factors
+Barthell- non-native honeybee impact on invasive plant, help spread?
+
+Invasive species are known to have a negative impact on native species and ecosystems around the world. Non-native plant invasions contribute to dwindling populations of native plant species that are ecologically and culturally important. Similarly, non-native pollinators can outcompete native species and contribute to population decline. This can further affect native plants that rely on native pollinators for efficient pollination if invasive species don’t replace the same functions. However, the specific effects that invasions can have in plant-pollinator interactions can vary. A review paper by (traveset) explains that invasive pollinators can have little to no impact on native plant-pollinator mutualism if it is a highly specialized relationship because invasive pollinators tend to be generalists and will interact with a wider variety of plant species. Invasive plants can have more of an impact on these native mutualisms, especially if they are more attractive to native pollinators and outcompete native plants. However, this may not be the case for highly specialized relationships.
+
+Incorporate Morales (non native plants affect pollinator visitation of other plants, flow from prev sentence or rewrite in order to incorporate this citation)  
+
+Invasive pollinators and plants may even interact with each other to have a greater impact on native plant-pollinator communities. For example, (Barthell) investigated the interactions between an invasive bee, Apis mellifera, and an invasive plant, Centaurea solstitialis, and found that A. mellifera increases the reproductive success of C. solstitialis, suggesting that invasive plant-pollinator mutualisms could contribute to more successful plant invasions, further impacting native plant-pollinator interactions.
+
+and then Paini (different pollinators limited by different factors). Some sort of contribution of how invasive pollinators can help invasive plants spread- maybe last, maybe between Paini and Morales- Barthell
+
+
+
+Past work and data available:                 2P   - 2nd is intro to our study and what data??
+Who has addressed this problem and what did they do with it (diff dataset/region)
+What data are available to address the problem? Other than hj andrews
+
+Thomson- honeybee colonies affect the reproductive success of a native social bumblebee
+Dohzono- invasive bumblebee affect relation b/w native plant and native bumblebees
+Dupont- impact of honey bees on native insects and birds, compare native & honey community
+Barthell- non-native honeybee impact on invasive plant, help spread?
+Borchardt- honeybee impact native interactions in prairie strips? no for native abundance
+
+	With all of these variable effects, it is important to understand native plant-pollinator interactions locally in order to better predict how invasions may impact the community in a certain place. More specific place-based studies have investigated how invasive pollinators can impact native plant-pollinator communities, primarily due to competition with native pollinators. For example, (Dohzono) found that a Japanese native bumblebee Bombus ardens visited a native plant, Corydalis ambigua, much less frequently when the invasive Bombus terrestris visited. This resulted in lower reproduction for the plant because B. terrestris robs nectar without contributing to pollination. The majority of research on invasive pollinators centers on the very successful Apis mellifera, or European honeybee, which has been brought all over the world to live alongside agricultural fields in order to pollinate crops and make honey. But their introduction into any ecosystem can have an impact on native bees and plants. For example, when (Thomson) studied the interactions between a California native social bee, B. occidentalis, and A. mellifera, they found that B. occidentalis colonies located closer to A. mellifera hives had lower reproductive success, which could have a further impact on plant species that rely on this native bee. INSERT DUPONT. 
+
+However, in a study by (Borchardt) on native plant-pollinator interactions in prairie strips alongside agricultural fields in California, they found little to no impact of A. mellifera presence on native bee community composition from June to August. From another angle, (Barthell) investigated the interactions between A. mellifera and an invasive plant, Centaurea solstitialis, and found that A. mellifera increases the reproductive success of C. solstitialis, suggesting that invasive plant-pollinator mutualisms could contribute to more successful plant invasions, further impacting native plant-pollinator interactions.
+
+The majority of research into how invasive species, especially pollinators like A. mellifera, impact native plant-pollinator interactions are situated close to more human-altered landscapes, such as agricultural areas. There is less research into native plant-pollinator interactions and how invasive species alter them in more remote areas. In our research, we investigate native plant-pollinator associations in high-elevation meadows, which are further from dense human populations. There may not be as much of an invasive bee impact here, especially due to the lack of commercial beekeeping. We also investigate how native plant-pollinator interactions may change over time, which hasn’t been closely studied. 
+
+Break P here??? We use plant-pollinator network data from the HJ Andrews experimental forest in order to explore these interactions. Explain dataset?? We also use plant databases, such as Oregon Flora and Calflora in order to identify which plants in the data are native or non-native. Our professor Lauren Ponisio gave us the most common non-native bee species present in the research site. We assume all other bee species are native.
+
+
+
+Purpose of the study:                       at least 1P
+Further refine approach (what data will we combine/transform, how will we address question)
+Justify why this is needed now (visualization to test new dimension of question or better convey an old one)
+
+	We will explore native plant-pollinator interactions in high-elevation meadows in the HJ Andrews 
+
+It is important to know how native pollinators interact with high-elevation plant communities because it will help conservation efforts in these wild areas. 
+
+
+
+Hypotheses/questions:        at least 1P- leading up to questions/hypotheses
+List clearly in logical order
+Make hypos directionally using predictions  “i predict urbanization will reduce plant diversity”
+
 What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native?
-Do non-native bees compete with native bees for access to native plants in these meadows?
+Do non-native bees compete with native bees for access to native plants in these meadows?        How to test this- in spots with higher abundances of invasive bees- does interaction change
 How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
 
-Hypothese/ Predictions:
-We predict...
-
-Paragraph 4: Workflow plan (data, analysis, visualisations)
+We predict native bees will more strongly associate with native plants in high-elevation meadows in Oregon. This is because 
+We predict that there will be little to no significant change in native plant-pollinator relationships in the presence of non-native bees. This is because 
+We also predict that native bees may shift to stronger associations with non-native plants later in the growing season due to potentially later blooming non-native species. This is because 
 
