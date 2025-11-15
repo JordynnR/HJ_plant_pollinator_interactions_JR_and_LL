@@ -9,8 +9,14 @@ This data was collected in high-elevation meadows in the HJ Andrews experimental
 
 Other Datasets:
 https://oregonflora.org/ 
-https://www.calflora.org/ 
+- Oregon Flora is a program owned by the department of Botany and Plant Pathology at Oregon State University
+- The database aggregates data from multiple different partners that was collected by many different parties and people.
+https://www.calflora.org/
+- Calflora is a non-profit
+- The database aggregates data from a wide variety of sources collected by many different parties and people.
+
 - We will use Oregon Flora and Calflora to help us identify which plants are native and non-native
+- Both of these are searchable databases that don't have columns that correspond to the species and native or non-native but we can use them to find out whether or not a plant species is native.
 - We will create 2 new columns to include this data: 1 for whether the observed bee is native and one for whether the focal plant is native.
 
 We also have a list of the most common non-native bee species:
