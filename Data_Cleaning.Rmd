@@ -1,0 +1,18 @@
+---
+title: "Data_cleaning"
+output: html_document
+date: "2025-11-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+##need to read data in and start cleaning it up- 
+# 1- get rid of unnecessary columns
+# 2- figure out what species to keep
+
+
+```
+
