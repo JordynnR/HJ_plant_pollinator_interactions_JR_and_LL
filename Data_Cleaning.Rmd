@@ -7,11 +7,25 @@ date: "2025-11-19"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Questions about dataset:
+1. what does each row mean?
+
+
+
+columns to keep:
+Year
+Site??
+Genus??
+GenusSpecies
+PlantGenus
+PlantGenusSpecies
+Date
 
 ```{r}
 ##need to read data in and start cleaning it up- 
 # 1- get rid of unnecessary columns
 # 2- figure out what species to keep
+raw_data<- read.csv("raw_data/spec_net_copy.csv")
 
 
 ```
