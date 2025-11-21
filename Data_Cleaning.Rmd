@@ -11,6 +11,7 @@ Questions about dataset:
 1. what does each row mean?- a single observation of a bee interacting with a plant?
 2. how to transform date column into month as well (maybe day?- probably not)
 3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values?
+4. bees- get rid of unknown species???- the ones with spp
 
 
 columns to keep:
