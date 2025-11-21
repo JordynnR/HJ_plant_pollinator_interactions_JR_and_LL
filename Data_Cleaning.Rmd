@@ -3,13 +3,14 @@ title: "Data_cleaning"
 output: html_document
 date: "2025-11-19"
 ---
-
+need this???
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 Questions about dataset:
-1. what does each row mean?
-
+1. what does each row mean?- a single observation of a bee interacting with a plant?
+2. how to transform date column into month as well (maybe day?- probably not)
+3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values?
 
 
 columns to keep:
@@ -27,6 +28,14 @@ Date
 # 2- figure out what species to keep
 raw_data<- read.csv("raw_data/spec_net_copy.csv")
 
+```
+
+##get rid of columns
+```{r}
+library(tidyverse)
+library(dplyr)
+kept_columns<- raw_data %>%
+  select(Year, Date, Genus, GenusSpecies, PlantGenusSpecies)
 
 ```
 
