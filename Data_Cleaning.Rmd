@@ -37,5 +37,6 @@ library(dplyr)
 kept_columns<- raw_data %>%
   select(Year, Date, Genus, GenusSpecies, PlantGenusSpecies)
 
+unique(kept_columns$GenusSpecies)
 ```
 
