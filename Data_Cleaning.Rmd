@@ -3,12 +3,9 @@ title: "Data_cleaning"
 output: html_document
 date: "2025-11-19"
 ---
-need this???
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-Questions about dataset:
-1. what does each row mean?- a single observation of a bee interacting with a plant?
+
+Questions:
+1. get rid of na- some written as ""
 2. how to transform date column into month as well (maybe day?- probably not)
 3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values?
 4. bees- get rid of unknown species???- the ones with spp
@@ -36,8 +33,33 @@ raw_data<- read.csv("raw_data/spec_net_copy.csv")
 library(tidyverse)
 library(dplyr)
 kept_columns<- raw_data %>%
-  select(Year, Date, Genus, GenusSpecies, PlantGenusSpecies)
+  select(Year, Date, Genus, GenusSpecies, PlantGenusSpecies) %>%
+  rename(BeeGenusSpecies= GenusSpecies) %>%
+  filter(BeeGenusSpecies!="")
 
-unique(kept_columns$GenusSpecies)
 ```
+
+fix unknown bee species format so all are spp. w/regex
+```{r}
+fix_sp_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
+fix_sp_only_regex <-   "^\\s*[sS][pP]{1,2}\\.?\\s*$"
+fix_genus_only_regex <-   "^\\s*([A-Za-z]+)\\s*$"
+
+# genus + (sp/spp/any capitalization, optional period any number of times)
+species_clean<- str_replace_all(kept_columns$BeeGenusSpecies, fix_sp_regex, "\\1spp.") #change name- columnn name?
+
+#step 1: if /only/ some version of spp present (no genus) as element in vector make it blank
+species_clean<- str_replace_all(species_clean, fix_sp_only_regex, "")
+
+#step 2: if it is a single word (genus only)- add spp.
+species_clean<- str_replace_all(species_clean, fix_genus_only_regex, "\\1 spp.")
+
+```
+
+
+transform date to usable format
+```{r}
+
+```
+
 
