@@ -4,11 +4,10 @@ output: html_document
 date: "2025-11-19"
 ---
 
-Questions:
-1. get rid of na- some written as ""
-2. how to transform date column into month as well (maybe day?- probably not)
-3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values?
-4. bees- get rid of unknown species???- the ones with spp
+Questions for Rebecca:
+1. bees- get rid of unknown species???- the ones with spp, do we want to keep species just labeled with spp. for our purposes
+2. how to extract month from date column and transform into numeric
+3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values? sankey plot maybe- investigate required inputs
 
 
 columns to keep:
