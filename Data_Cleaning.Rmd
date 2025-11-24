@@ -52,7 +52,8 @@ no_unknown<- kept_columns %>%
 
 transform date to usable format
 ```{r}
-
+# month_column<- no_unknown %>%
+#   some combo of mutate and/or filter??- maybe not filter and just use regex inside mutate while creating new column
 ```
 
 
