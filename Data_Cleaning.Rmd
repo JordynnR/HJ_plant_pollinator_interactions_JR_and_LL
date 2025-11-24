@@ -32,7 +32,7 @@ raw_data<- read.csv("raw_data/spec_net_copy.csv")
 library(tidyverse)
 library(dplyr)
 kept_columns<- raw_data %>%
-  select(Year, Date, Genus, GenusSpecies, PlantGenusSpecies) %>%
+  select(Date, GenusSpecies, PlantGenusSpecies) %>%
   rename(BeeGenusSpecies= GenusSpecies) %>%
   dplyr::filter(BeeGenusSpecies!="")
 
@@ -42,12 +42,10 @@ use regex to filter out spp/sp species?
 ```{r}
 sp_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
 
+no_unkown<- kept_columns %>%
+  dplyr::filter(!(BeeGenusSpecies = grepl(sp_regex,BeeGenusSpecies)))
 
-
-no_unkown<- raw_data %>%
-  dplyr::filter(BeeGenusSpecies!= sp_regex)
-
-##maybe has to be inludes regex???- ask
+##maybe has to be "includes regex???"- ask
 
 ```
 
