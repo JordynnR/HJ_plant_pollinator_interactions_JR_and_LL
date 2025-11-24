@@ -5,9 +5,9 @@ date: "2025-11-19"
 ---
 
 Questions for Rebecca:
-1. bees- get rid of unknown species???- the ones with spp, do we want to keep species just labeled with spp. for our purposes
 2. how to extract month from date column and transform into numeric
 3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values? sankey plot maybe- investigate required inputs
+4. would spatial data even be useful to us
 
 
 columns to keep:
@@ -34,24 +34,20 @@ library(dplyr)
 kept_columns<- raw_data %>%
   select(Year, Date, Genus, GenusSpecies, PlantGenusSpecies) %>%
   rename(BeeGenusSpecies= GenusSpecies) %>%
-  filter(BeeGenusSpecies!="")
+  dplyr::filter(BeeGenusSpecies!="")
 
 ```
 
-fix unknown bee species format so all are spp. w/regex
+use regex to filter out spp/sp species?
 ```{r}
-fix_sp_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
-fix_sp_only_regex <-   "^\\s*[sS][pP]{1,2}\\.?\\s*$"
-fix_genus_only_regex <-   "^\\s*([A-Za-z]+)\\s*$"
+sp_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
 
-# genus + (sp/spp/any capitalization, optional period any number of times)
-species_clean<- str_replace_all(kept_columns$BeeGenusSpecies, fix_sp_regex, "\\1spp.") #change name- columnn name?
 
-#step 1: if /only/ some version of spp present (no genus) as element in vector make it blank
-species_clean<- str_replace_all(species_clean, fix_sp_only_regex, "")
 
-#step 2: if it is a single word (genus only)- add spp.
-species_clean<- str_replace_all(species_clean, fix_genus_only_regex, "\\1 spp.")
+no_unkown<- raw_data %>%
+  dplyr::filter(BeeGenusSpecies!= sp_regex)
+
+##maybe has to be inludes regex???- ask
 
 ```
 
