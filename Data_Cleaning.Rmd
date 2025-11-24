@@ -38,14 +38,14 @@ kept_columns<- raw_data %>%
 
 ```
 
-use regex to filter out spp/sp species?
+use regex to filter out spp/sp (unknown) species
 ```{r}
-sp_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
+sp_ending_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
+sp_number_regex <- "sp\\.\\s*\\d+$"
 
-no_unkown<- kept_columns %>%
-  dplyr::filter(!(BeeGenusSpecies = grepl(sp_regex,BeeGenusSpecies)))
-
-##maybe has to be "includes regex???"- ask
+no_unknown<- kept_columns %>%
+  dplyr::filter(!(BeeGenusSpecies = grepl(sp_ending_regex,BeeGenusSpecies))) %>%
+  dplyr::filter(!(BeeGenusSpecies = grepl(sp_number_regex,BeeGenusSpecies)))
 
 ```
 
