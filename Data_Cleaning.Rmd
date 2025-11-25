@@ -5,24 +5,18 @@ date: "2025-11-19"
 ---
 
 Questions for Rebecca:
-2. how to extract month from date column and transform into numeric
-3. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values? sankey plot maybe- investigate required inputs
-4. would spatial data even be useful to us
+1. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values? sankey plot maybe- investigate required inputs
+2. would spatial data even be useful to us
+3. native vs. non-native plants- how to deal with mixed??
 
 
 columns to keep:
-Year
-Site??
-Genus??
 GenusSpecies
-PlantGenus
 PlantGenusSpecies
 Date
 
 ```{r}
-##need to read data in and start cleaning it up- 
-# 1- get rid of unnecessary columns
-# 2- figure out what species to keep
+##read data in
 raw_data<- read.csv("raw_data/spec_net_copy.csv")
 
 ```
