@@ -31,11 +31,11 @@ raw_data<- read.csv("raw_data/spec_net_copy.csv")
 ```{r}
 library(tidyverse)
 library(dplyr)
-##only keeping date, bee species and plant species columns
+##only keeping date, pollinator species and plant species columns
 kept_columns<- raw_data %>%
   select(Date, GenusSpecies, PlantGenusSpecies) %>%
-  rename(BeeGenusSpecies= GenusSpecies) %>% #rename GenusSpecies to BeeGenusSpecies to more easily differentiate
-  dplyr::filter(BeeGenusSpecies!="") %>%
+  rename(PollinatorGenusSpecies= GenusSpecies) %>% #rename GenusSpecies to PollinatorGenusSpecies to more easily differentiate
+  dplyr::filter(PollinatorGenusSpecies!="") %>%
   dplyr::filter(PlantGenusSpecies!="")           #get rid of empty rows
 
 ```
@@ -64,8 +64,8 @@ class(kept_columns$Month)
 
 use regex to filter out spp/sp (unknown) species
 ```{r}
-#test to see what bee species name are present
-unique(no_unknown$BeeGenusSpecies)
+#test to see what pollinator species name are present
+unique(no_unknown$PollinatorGenusSpecies)
 #found a lot of unknown species that we can't use because we can't determine whether they are native or not for our analysis, so we will use regular expressions to filter them out
 
 ##create regex to use for filtering
@@ -78,9 +78,9 @@ genus_only_regex <-   "^\\s*([A-Za-z]+)\\s*$"
 
 #filter rows that are not (!) in the reg expressions above (had to make 2 for 2 different formats)
 no_unknown<- kept_columns %>%
-  dplyr::filter(!(BeeGenusSpecies = grepl(sp_ending_regex,BeeGenusSpecies))) %>%
-  dplyr::filter(!(BeeGenusSpecies = grepl(sp_number_regex,BeeGenusSpecies))) %>%
-  dplyr::filter(!(BeeGenusSpecies = grepl(genus_only_regex,BeeGenusSpecies)))
+  dplyr::filter(!(PollinatorGenusSpecies = grepl(sp_ending_regex,PollinatorGenusSpecies))) %>%
+  dplyr::filter(!(PollinatorGenusSpecies = grepl(sp_number_regex,PollinatorGenusSpecies))) %>%
+  dplyr::filter(!(PollinatorGenusSpecies = grepl(genus_only_regex,PollinatorGenusSpecies)))
 
 ```
 
@@ -146,8 +146,37 @@ length(native_plants)
 ##add NativePlant column to dataframe- if listed plant species in PlantGenusSpecies is in the native_plants vector, NativePlant will have TRUE, otherwise it will have FALSE
 w_native_plants<- no_unknown %>%
   mutate(
-    NativePlant = ifelse (PlantGenusSpecies %in% native_plants, yes=TRUE, no=FALSE)
+    NativePlant = ifelse (PlantGenusSpecies %in% native_plants, yes=1, no=0)
   )
 
+#check that values came out right
+unique(w_native_plants$NativePlant)
+```
+
+add native pollinator column- 1 for native, 0 for non-native
+```{r}
+##used common non-native list from Lauren
+non_native_bees<- c("Apis mellifera", "Megachile rotundata", "Anthidium manicatum", "Osmia cornifrons")
+
+w_native_pollinators<- w_native_plants %>%
+  mutate(
+    NativePollinator = ifelse (PollinatorGenusSpecies %in% non_native_bees, yes=0, no=1)
+  )
+
+#check that values came out right
+unique(w_native_pollinators$NativePollinator)
+```
+check final dataframe and export file to repository
+```{r}
+print(w_native_pollinators)
+
+#reorder columns
+re_ordered<- w_native_pollinators %>%
+  select(Month, PollinatorGenusSpecies, NativePollinator, PlantGenusSpecies, NativePlant)
+
+re_ordered
+
+#export to folder in repository called clean_data (this folder needs to be created locally)
+write.csv(re_ordered, "clean_data/HJ_data.csv", row.names = TRUE)
 ```
 
