@@ -31,34 +31,23 @@ raw_data<- read.csv("raw_data/spec_net_copy.csv")
 ```{r}
 library(tidyverse)
 library(dplyr)
+##only keeping date, bee species and plant species columns
 kept_columns<- raw_data %>%
   select(Date, GenusSpecies, PlantGenusSpecies) %>%
-  rename(BeeGenusSpecies= GenusSpecies) %>%
-  dplyr::filter(BeeGenusSpecies!="")
+  rename(BeeGenusSpecies= GenusSpecies) %>% #rename GenusSpecies to BeeGenusSpecies to more easily differentiate
+  dplyr::filter(BeeGenusSpecies!="")   #get rid of empty rows
 
 ```
 
-use regex to filter out spp/sp (unknown) species
+transform date to month number
+
 ```{r}
-sp_ending_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
-sp_number_regex <- "sp\\.\\s*\\d+$"
+class(kept_columns) #test class= data frame
 
-no_unknown<- kept_columns %>%
-  dplyr::filter(!(BeeGenusSpecies = grepl(sp_ending_regex,BeeGenusSpecies))) %>%
-  dplyr::filter(!(BeeGenusSpecies = grepl(sp_number_regex,BeeGenusSpecies)))
-
-#filter rows that are not (!) in the reg expression format of above (had to make 2 for 2 differetn formats)
-```
-
-
-transform date to usable format
-```{r}
-# month_column<- no_unknown %>%
-#   some combo of mutate and/or filter??- maybe not filter and just use regex inside mutate while creating new column
-class(kept_columns) #data frame
-
+#replacing the values in the Date column with only the first number of each, which is the month
 kept_columns$Date <- sub("^(\\d{1,2})/.*", "\\1", kept_columns$Date)
 
+#rename Date to Month
 kept_columns <- kept_columns%>%
   rename(Month = Date)
 
@@ -67,4 +56,20 @@ kept_columns
 table(kept_columns$Month)
 ```
 
+use regex to filter out spp/sp (unknown) species
+```{r}
+##create regex to use for filtering
+#looks for pattern ending in any variation of spp/sp with any number of "."; got from the class demo
+sp_ending_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
+#looks for pattern ending in "sp."+"any numeric" with optional space or . in between; asked copilot
+sp_number_regex <- "sp\\.?\\s?[0-9]+$"
+#looks for pattern that is only genus; got from class demo
+genus_only_regex <-   "^\\s*([A-Za-z]+)\\s*$"
 
+#filter rows that are not (!) in the reg expressions above (had to make 2 for 2 different formats)
+no_unknown<- kept_columns %>%
+  dplyr::filter(!(BeeGenusSpecies = grepl(sp_ending_regex,BeeGenusSpecies))) %>%
+  dplyr::filter(!(BeeGenusSpecies = grepl(sp_number_regex,BeeGenusSpecies))) %>%
+  dplyr::filter(!(BeeGenusSpecies = grepl(genus_only_regex,BeeGenusSpecies)))
+
+```
