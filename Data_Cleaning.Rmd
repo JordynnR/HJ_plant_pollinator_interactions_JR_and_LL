@@ -35,7 +35,8 @@ library(dplyr)
 kept_columns<- raw_data %>%
   select(Date, GenusSpecies, PlantGenusSpecies) %>%
   rename(BeeGenusSpecies= GenusSpecies) %>% #rename GenusSpecies to BeeGenusSpecies to more easily differentiate
-  dplyr::filter(BeeGenusSpecies!="")   #get rid of empty rows
+  dplyr::filter(BeeGenusSpecies!="") %>%
+  dplyr::filter(PlantGenusSpecies!="")           #get rid of empty rows
 
 ```
 
@@ -51,13 +52,22 @@ kept_columns$Date <- sub("^(\\d{1,2})/.*", "\\1", kept_columns$Date)
 kept_columns <- kept_columns%>%
   rename(Month = Date)
 
-kept_columns
-
+##test to make sure months are now just months, should be single numbers and not a full date
 table(kept_columns$Month)
+
+#change month values from characters to numerics
+kept_columns$Month<- as.numeric(kept_columns$Month)
+
+#test that months are numeric
+class(kept_columns$Month)
 ```
 
 use regex to filter out spp/sp (unknown) species
 ```{r}
+#test to see what bee species name are present
+unique(no_unknown$BeeGenusSpecies)
+#found a lot of unknown species that we can't use because we can't determine whether they are native or not for our analysis, so we will use regular expressions to filter them out
+
 ##create regex to use for filtering
 #looks for pattern ending in any variation of spp/sp with any number of "."; got from the class demo
 sp_ending_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
@@ -73,3 +83,71 @@ no_unknown<- kept_columns %>%
   dplyr::filter(!(BeeGenusSpecies = grepl(genus_only_regex,BeeGenusSpecies)))
 
 ```
+
+fix plant species with no space
+```{r}
+#test to see what plant species name are present
+unique(no_unknown$PlantGenusSpecies)
+#didn't find any unknown plant species, but 1 plant species is listed with no space as Liliumcolumbianum
+
+#replace the incorrect species format with the right format using a regex and the exact correct wording
+no_unknown$PlantGenusSpecies<- gsub("^Liliumcolumbianum$", "Lilium columbianum", no_unknown$PlantGenusSpecies)
+
+#check to see that it's been replaced
+unique(no_unknown$PlantGenusSpecies)
+
+```
+
+make column for native plants- 1 for native (TRUE), 0 for non-native (FALSE)
+```{r}
+##Use unique to pull out unique species in PlantGenusSpecies
+plant_species<- unique(no_unknown$PlantGenusSpecies)
+##copied and pasted this vector and asked copilot to reference Oregon Flora and Calflora to see which plant species listed in the vector are native and which are non-native
+##according to Oregon Flora and Calflora, two species could be either native or introduced from Eurasia: Achillea millefolium and Prunella vulgaris
+##there were also four species that are non-native: Rumex acetosella, Hypericum perforatum, Taraxacum officinale, Vicia sativa
+
+#vector representing native species without the non-native species or those that could go either way
+native_plants<- c(
+  "Delphinium menziesii","Vicia americana","Viola orbiculata","Lathyrus nevadensis",
+  "Potentilla gracilis","Polygonum phytolaccifolium","Ligusticum grayi","Orthocarpus imbricatus",
+  "Aquilegia formosa","Cirsium callilepis","Eriogonum compositum","Symphoricarpos mollis",
+  "Erigeron foliosus","Senecio triangularis","Lupinus laxiflorus","Fragaria virginiana",
+  "Rudbeckia occidentalis","Aster ledophyllus","Solidago canadensis","Penstemon procerus",
+  "Potentilla glandulosa","Mimulus nanus","Mimulus guttatus","Montia parvifolia",
+  "Mimulus tilingii","Phacelia hastata","Calochortus subalpinus","Eriophyllum lanatum",
+  "Amelanchier alnifolia","Penstemon cardwellii","Arenaria macrophylla","Sedum oreganum",
+  "Silene douglasii","Arctostaphylos nevadensis","Sorbus sitchensis","Rosa gymnocarpa",
+  "Castilleja hispida","Zigadenus venenosus","Phlox gracilis","Collinsia parviflora",
+  "Epilobium anagallidifolium","Angelica arguta","Gilia capitata","Eriogonum umbellatum",
+  "Acmispon nevadensis","Agoseris heterophylla","Eriogonum nudum","Lomatium martindalei",
+  "Erysimum asperum","Arenaria capillaris","Ranunculus uncinatus","Clarkia amoena",
+  "Lomatium triternatum","Rainiera stricta","Stachys cooleyae","Holodiscus dumosus",
+  "Polemonium carneum","Dichelostemma congestum","Gayophytum humile","Stellaria crispa",
+  "Rubus parviflorus","Heracleum lanatum","Tiarella trifoliata","Smilacina racemosa",
+  "Anaphalis margaritacea","Chamerion angustifolium","Dodecatheon jeffreyi","Mertensia bella",
+  "Boykinia major","Perideridia gairdneri","Microseris nutans","Campanula scouleri",
+  "Castilleja miniata","Apocynum androsaemifolium","Senecio integerrimus","Erigeron aliceae",
+  "Vancouveria hexandra","Mitella pentandra","Mimulus moschatus","Montia sibirica",
+  "Sedum oregonense","Hypericum anagalloides","Mertensia paniculata","Platanthera sparsiflora",
+  "Cerastium arvense","Erythronium grandiflorum","Hydrophyllum occidentale","Stachys chamissonis",
+  "Lilium columbianum","Drymocallis glandulosa","Epilobium ciliatum","Lithophragma parviflorum",
+  "Erysimum capitatum","Symphoricarpos albus","Saxifraga occidentalis","Hieracium cynoglossoides",
+  "Holodiscus discolor","Claytonia lanceolata","Phacelia heterophila","Stachys rigida",
+  "Xerophyllum tenax","Agoseris aurantiaca","Collinsia grandiflora","Solidago elongata",
+  "Solidago lepida","Navarretia divaricata","Symphyotrichum foliaceum","Gayophytum diffusum",
+  "Maianthemum stellatum","Barbarea orthoceras","Mimulus rubellus","Lewisia triphylla",
+  "Viola glabella","Pedicularis bracteosa","Acmispon americanus","Lupinus latiflorus",
+  "Valeriana sitchensis","Epilobium oregonense"
+)
+
+#check length to make sure copilot gave back the right number of species excluding the non-natives, should be 118
+length(native_plants)
+
+##add NativePlant column to dataframe- if listed plant species in PlantGenusSpecies is in the native_plants vector, NativePlant will have TRUE, otherwise it will have FALSE
+w_native_plants<- no_unknown %>%
+  mutate(
+    NativePlant = ifelse (PlantGenusSpecies %in% native_plants, yes=TRUE, no=FALSE)
+  )
+
+```
+
