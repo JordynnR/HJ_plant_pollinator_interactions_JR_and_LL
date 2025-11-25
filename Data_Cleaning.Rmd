@@ -59,7 +59,7 @@ class(kept_columns$Month)
 use regex to filter out spp/sp (unknown) species
 ```{r}
 #test to see what pollinator species name are present
-unique(no_unknown$PollinatorGenusSpecies)
+unique(kept_columns$PollinatorGenusSpecies)
 #found a lot of unknown species that we can't use because we can't determine whether they are native or not for our analysis, so we will use regular expressions to filter them out
 
 ##create regex to use for filtering
@@ -97,7 +97,7 @@ make column for native plants- 1 for native (TRUE), 0 for non-native (FALSE)
 ##Use unique to pull out unique species in PlantGenusSpecies
 plant_species<- unique(no_unknown$PlantGenusSpecies)
 ##copied and pasted this vector and asked copilot to reference Oregon Flora and Calflora to see which plant species listed in the vector are native and which are non-native
-##according to Oregon Flora and Calflora, two species could be either native or introduced from Eurasia: Achillea millefolium and Prunella vulgaris
+##according to Oregon Flora and Calflora, two species has both a native version and introduced version from Eurasia: Achillea millefolium and Prunella vulgaris- decided to include them as natives because the species still counts as native
 ##there were also four species that are non-native: Rumex acetosella, Hypericum perforatum, Taraxacum officinale, Vicia sativa
 
 #vector representing native species without the non-native species or those that could go either way
@@ -131,7 +131,7 @@ native_plants<- c(
   "Solidago lepida","Navarretia divaricata","Symphyotrichum foliaceum","Gayophytum diffusum",
   "Maianthemum stellatum","Barbarea orthoceras","Mimulus rubellus","Lewisia triphylla",
   "Viola glabella","Pedicularis bracteosa","Acmispon americanus","Lupinus latiflorus",
-  "Valeriana sitchensis","Epilobium oregonense"
+  "Valeriana sitchensis","Epilobium oregonense", "Achillea millefolium", "Prunella vulgaris"
 )
 
 #check length to make sure copilot gave back the right number of species excluding the non-natives, should be 118
