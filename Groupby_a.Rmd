@@ -1,0 +1,71 @@
+---
+title: "Groupby_a"
+author: "Lily"
+date: "2025-11-25"
+output: html_document
+---
+```{r}
+
+library(terra)
+library(ggplot2)
+library(dplyr)
+
+
+clean_data <- read.csv("C:/UO_Biology/HJ_plant_pollinator_interactions_JR_and_LL/clean_data/HJ_data.csv")
+
+spec(HJ_data)
+
+clean_data <- HJ_data
+
+spec(clean_data)
+
+names(clean_data)
+```
+
+```{r}
+clean_data %>%
+  group_by(NativePollinator) %>%
+  summarise(count = n())
+#13579 non native bee individuals
+#15974 native bee individuals
+
+
+clean_data %>%
+  group_by(NativePlant) %>%
+  summarise(count = n())
+#1207 non native plants 
+#28346 native plants 
+
+```
+
+```{r}
+#creating a summary of the plant, whether non native bees were observed, and the abudance of native bee records 
+
+plants <- clean_data %>%
+  group_by(PlantGenusSpecies) %>%
+  summarise(non_nativebee_present = any(NativePollinator == 0),
+            nativebee_count = sum(NativePollinator ==1))
+plants
+table(plants$non_nativebee_present)
+#time to see if there is a difference in the counts of native bees due to the presence of non-native bees
+
+```
+
+```{r}
+#creating boxplot 
+
+ggplot(plants, aes(x = non_nativebee_present, y = nativebee_count))+
+  geom_boxplot(fill = "lightgreen", alpha = 0.6) +
+  labs( x= "Non-native bee presence",
+        y = "Native bee abundance",
+        title = "Native bee abundance by plant type")+
+  theme_minimal()
+
+```
+This is the opposite of our predictions. However one can observe a much larger range in native bee abundances for when non native bees are present. FALSE(n=51), TRUE(n=73) 
+
+
+
+
+
+
