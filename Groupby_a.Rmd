@@ -58,14 +58,64 @@ ggplot(plants, aes(x = non_nativebee_present, y = nativebee_count))+
   geom_boxplot(fill = "lightgreen", alpha = 0.6) +
   labs( x= "Non-native bee presence",
         y = "Native bee abundance",
-        title = "Native bee abundance by plant type")+
+        title = "Native bee abundance relative to presence non-native bees")+
   theme_minimal()
 
 ```
-This is the opposite of our predictions. However one can observe a much larger range in native bee abundances for when non native bees are present. FALSE(n=51), TRUE(n=73) 
+This is the opposite of our predictions. However one can observe a much larger range in native bee abundances for when non native bees are present. FALSE(n=51), TRUE(n=73). This boxplot includes bee observation from both native and non-native plants.  
 
 
+now for the line plots 
+```{r}
+#count how many observations involve native vs non-native plants per month
 
+
+plant_month_plot <- clean_data %>%
+  group_by(Month, NativePlant) %>%
+  summarise(plant_abundance = n(), .groups = "drop") #creates a new abundance column that counts number of bee observations corresponding to native vs non-native for each month 
+
+plant_month_plot #shows each month twice, 1 for abundance of native plants (0) and one for abundance of non-native plants (1).
+
+#for the plot we want though:
+bee_month_plot <- clean_data %>%
+  filter(NativePollinator == 1) %>% 
+  group_by(Month, NativePlant) %>%
+  summarise(native_bee_abundance = n(), .groups = "drop")
+
+bee_month_plot
+```
+
+
+the plots for these 
+
+```{r}
+ggplot(plant_month_plot, aes(x = Month, y = plant_abundance, color = factor(NativePlant), group = NativePlant)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("red", "green"),
+                     labels = c("Non-native plants", "Native plants"))+
+  labs(x= "Month", y = "Plant abundance",
+       color = "Plant type",
+       title = "Native vs. Non-native plant abundances by month") +
+  theme_minimal()
+
+
+```
+
+
+```{r}
+ggplot(bee_month_plot, aes(x = Month, y = native_bee_abundance, color = factor(NativePlant), group = NativePlant)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("red", "green"),
+                     labels = c("Non-native plants", "Native plants"))+
+  labs(x= "Month", y = "Native bee abundance",
+       color = "Plant type",
+       title = "Native bee observations on native vs. non-native plants by month") +
+  theme_minimal()
+
+
+```
 
 
 
