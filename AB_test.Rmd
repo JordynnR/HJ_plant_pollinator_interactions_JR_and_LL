@@ -8,10 +8,6 @@ read in data and library
 library(tidyverse)
 
 clean_data<- read.csv("clean_data/HJ_data.csv")
-
-
-# For reproducibility purposes ---- will need eventually, not run yet
-set.seed(123)
 ```
 
 AB test description:
@@ -42,7 +38,7 @@ Test statistic is the difference between the ratios of bee abundance at either n
 test stat= number of bee interactions per species then take mean number of interactions per group
 ```{r}
 ## number of bee observations per plant species
-# will use this dataframe for shuffling labels so each 
+# will use this dataframe for shuffling labels
 abundance_by_plant<- native_bees %>%
   group_by(PlantGenusSpecies, NativePlant) %>%
   summarize(abundance= n(), .groups="drop")
@@ -53,7 +49,8 @@ av_interactions<- abundance_by_plant %>%
   summarize(mean_interactions= mean(abundance), .groups="drop")
 
 #find difference between them
-observed_stat <- abs(av_interactions$mean_interactions[av_interactions$NativePlant=="0"] - av_interactions$mean_interactions[av_interactions$NativePlant=="1"])
+# average number of interactions for a native species - average number of interactions for a non-native species
+observed_stat <- av_interactions$mean_interactions[av_interactions$NativePlant=="1"] - av_interactions$mean_interactions[av_interactions$NativePlant=="0"]
 
 observed_stat
 ```
@@ -70,7 +67,7 @@ calc_statistic<- function(df){
   df3<- df2 %>%
     group_by(NativePlant) %>%
     summarize(mean=mean(abundance), .groups="drop")
-  obs_stat <- abs(df3$mean[df3$NativePlant=="0"]- df3$mean[df3$NativePlant=="1"])
+  obs_stat <- df3$mean[df3$NativePlant=="1"]- df3$mean[df3$NativePlant=="0"]
   return(obs_stat)
   }
 
@@ -81,6 +78,36 @@ calc_statistic(native_bees)
 
 ##figure out shuffling and running one test
 ```{r}
+## for reproducibility
+set.seed(123)
+
+##shuffle label column from native_bees
+native_bees_shuffle <-  sample(native_bees$NativePlant, 
+                         nrow(native_bees), replace=FALSE)
+
+## create data frame to use for test without altering og
+native_bees_test<- native_bees
+
+#create new column with shuffled labels
+native_bees_test$NativePlantShuffled<- native_bees_shuffle
+
+#check that the column was added
+head(native_bees_test)
+
+## new function for calculating test statistic with shuffled column instead of the original NativePlant column
+calc_stat_shuffled<- function(df){
+  df2<- df %>%
+    group_by(PlantGenusSpecies, NativePlantShuffled) %>%
+    summarize(abundance= n(), .groups="drop")
+  df3<- df2 %>%
+    group_by(NativePlantShuffled) %>%
+    summarize(mean=mean(abundance), .groups="drop")
+  obs_stat <- df3$mean[df3$NativePlantShuffled=="1"]- df3$mean[df3$NativePlantShuffled=="0"]
+  return(obs_stat)
+  }
+
+#test with native_bees after it's been shuffled once, run whole cell a few times to ensure this gives different numbers: it does
+calc_stat_shuffled(native_bees_test)
 
 ```
 
@@ -88,6 +115,20 @@ calc_statistic(native_bees)
 - We will need a second function that uses the first function to run a permutation test:
 - - It will reshuffle the native plant and non-native plant labels and re-run the above function to generate a new statistic
 ```{r}
+## for reproducibility
+set.seed(123)
+
+## function to run shuffling and test with calc_stat_shuffled
+run_one_test<- function(df){
+  shuffled_labels<- sample(df$NativePlant,
+                           nrow(df), replace=FALSE)
+  df$NativePlantShuffled<- shuffled_labels
+  test_stat<- calc_stat_shuffled(df)
+  return(test_stat)
+}
+
+## test function- run a couple times to ensure you get different results
+run_one_test(native_bees)
 
 ```
 
@@ -95,14 +136,40 @@ calc_statistic(native_bees)
 - We will then need a for loop to run the AB test:
 - - It will take the second function to reshuffle and re-run the test statistic over a number of loops to generate a vector of statistics
 ```{r}
-##run for loop
+## set up empty vector to fill with test statistic values
+test_stats<- vector(mode="numeric", length=0)
+
+##create for loop
+for (i in 1:1000){
+  one_test<- run_one_test(native_bees)
+  test_stats<- append(test_stats, one_test)
+}
+
+## look at vector to see if it filled- it is
+test_stats[1:10]
+
+## test it contains numeric values- it does
+class(test_stats)
 
 ```
 
+find p-value
+```{r}
+## calculate p-value
+# how probable that test stats are equal to observed or farther in direction of alt hypothesis
+p_val <- mean(abs(test_stats)<= abs(observed_stat))
+p_val
+```
 
 - We will then plot these statistics and compare the observed statistic to the histogram to see if there is a significant difference between the two groups (native and non-native plants).
 ```{r}
+## turn test_stats vector into a dataframe to plot
+test_stats_df<- as.data.frame(test_stats)
+
 ##plot histogram- results from for loop AND observed test statistic
+ggplot(test_stats_df) +
+  geom_histogram(aes(x=test_stats)) +
+  geom_point(aes(x=observed_stat, y=0),color="red")
 ```
 
 
