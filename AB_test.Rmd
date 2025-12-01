@@ -10,12 +10,8 @@ library(tidyverse)
 clean_data<- read.csv("clean_data/HJ_data.csv")
 ```
 
-AB test description:
-- Null hypothesis: there is no difference in native bee abundance between between native and non-native plants.
-- Alternative hypothesis: there is higher native bee abundance at native plants than non-native plants.
-
+filter out non-native pollinators because we are only testing native pollinators
 ```{r}
-##only testing native pollinator interactions right now so filter out non-native pollinators
 #only keep columns relevant to this test- 
 native_bees<- clean_data %>%
   filter(NativePollinator==1) %>%
@@ -23,19 +19,17 @@ native_bees<- clean_data %>%
 #now all pollinators included are native so we don't need the NativePollinator column
 ```
 
-Groups/treatments are native and non-native plants
+AB test description:
 
-- Test statistic is the difference in mean abundances of native bees observed at native vs. non-native plants
+Null hypothesis: there is no difference in native bee abundance between between native and non-native plants.
 
-OR diff in abundances of native bees observed at native vs. non-native plants/abundance of those types of plants
+Alternative hypothesis: there is a significant difference in native bee abundance at native plants versus non-native plants.
 
-Test statistic is the difference between the ratios of bee abundance at either native or non-native plants divided by the number of native or non-native species present
+Test statistic: the difference between the average native bee observations per species between native plant species and non-native plant species.
 
-- Labels of native and non-native plants would be shuffled and test statistic recalculated to generate a histogram and p-value to determine if there is a significant difference between groups
+START of AB test
 
-##figure out how to calculate test stat- end with finding observed stat
-
-test stat= number of bee interactions per species then take mean number of interactions per group
+##figure out how to calculate observed stat
 ```{r}
 ## number of bee observations per plant species
 # will use this dataframe for shuffling labels
@@ -55,11 +49,8 @@ observed_stat <- abs(av_interactions$mean_interactions[av_interactions$NativePla
 observed_stat
 ```
 
-- We will need a function to calculate the test statistic:
-- - It will group by native and non-native plants to calculate the abundance of native bee visits at each.
-- - It will then calculate the difference between those abundances and that is the test statistic
+##create function to calculate observed stat using above calculations
 ```{r}
-####define function using above calculations
 ### this function calculates the observed statistic by first finding the average of observations per species for both native and non-native groups of plant species
 calc_statistic<- function(df){
   #first find the average abundance for species based on group (native or non-native plants)
@@ -112,13 +103,11 @@ calc_stat_shuffled(by_species_test)
 ```
 
 
-- We will need a second function that uses the first function to run a permutation test:
-- - It will reshuffle the native plant and non-native plant labels and re-run the above function to generate a new statistic
+## create function for shuffling labels and calculating test statistic from that using above manipulation and the calc_stat_shuffled function
 ```{r}
 ## for reproducibility
 set.seed(123)
 
-#### function to run shuffling and test with calc_stat_shuffled
 ### this function creates a vector of shuffled labels from the NativePlant column from a given dataframe and adds that vector to a new column in the dataframe. It then calculates a test statistic given the newly re-shuffled lables in the dataframe using the calc-stat-shuffled function defined above.
 run_one_test<- function(df){
   #first create a vector of shuffled labels (native or non-native plant) from the NativePlant column, without replacing values after they were sampled and making it the same length as the original NativePlant column so the same number of native and non-native labels are present
@@ -137,13 +126,11 @@ run_one_test(observations_by_plant)
 ```
 
 
-- We will then need a for loop to run the AB test:
-- - It will take the second function to reshuffle and re-run the test statistic over a number of loops to generate a vector of statistics
+## create and run for loop to shuffle and calculate test statistic 1000 times
 ```{r}
 ## set up empty vector to fill with test statistic values
 test_stats<- vector(mode="numeric", length=0)
 
-#### create for loop
 ### this for loop runs 1000 permutation tests using the run_one_test function defined above and adds each value to an originally empty vector of test statistics
 for (i in 1:1000){
   # first run a permuation test with the run_one_test function to get a test statistic back
@@ -170,19 +157,51 @@ p_val
 ##include apis mellifera and do it again to see if it's even more different
 ```
 
-- We will then plot these statistics and compare the observed statistic to the histogram to see if there is a significant difference between the two groups (native and non-native plants).
+##plot histogram of test statistics and observed statistic to visualize if there is a difference
 ```{r}
 ## turn test_stats vector into a dataframe to plot
 test_stats_df<- as.data.frame(test_stats)
 
 ##plot histogram- results from for loop AND observed test statistic
-ggplot(test_stats_df) +
+test_hist<- ggplot(test_stats_df) +
   geom_histogram(aes(x=test_stats)) +
   geom_point(aes(x=observed_stat, y=0),color="red")
 ```
 
+save ggplot to visualizations folder
+```{r}
+ggsave("final_visuals/native_bees_AB_test_hist", plot=test_hist)
+```
 
-- This will also be for question 1.
 
+re-test including Apis mellifera and/or non-natives??
+```{r}
+##include non-native bees
+w_apis<- clean_data %>%
+  select(PollinatorGenusSpecies, PlantGenusSpecies, NativePlant)
 
+#recreate observations per plant with non-native bees
+obs_by_plant_w_apis<- w_apis %>%
+  group_by(PlantGenusSpecies, NativePlant) %>%
+  summarize(abundance= n(), .groups="drop")
+
+# new observed stat w/non-native bees
+obs_w_apis<- calc_statistic(observations_by_plant)
+
+# new empty vector for non-native bee tests
+test_w_apis<- vector(mode="numeric", length=0)
+
+#new for loop to run tests with non-native bees included
+for (i in 1:1000){
+  # first run a permuation test with the run_one_test function to get a test statistic back
+  one_test_w_apis<- run_one_test(obs_by_plant_w_apis)
+  # next add that new test statistic to the test_stats vector
+  test_w_apis<- append(test_w_apis, one_test)
+}
+
+#p-value with non-native bees included
+p_val_w_apis <- mean(abs(test_w_apis) >= abs(obs_w_apis))
+p_val_w_apis
+
+```
 
