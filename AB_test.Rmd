@@ -50,7 +50,7 @@ av_interactions<- abundance_by_plant %>%
 
 #find difference between them
 # average number of interactions for a native species - average number of interactions for a non-native species
-observed_stat <- av_interactions$mean_interactions[av_interactions$NativePlant=="1"] - av_interactions$mean_interactions[av_interactions$NativePlant=="0"]
+observed_stat <- abs(av_interactions$mean_interactions[av_interactions$NativePlant=="1"] - av_interactions$mean_interactions[av_interactions$NativePlant=="0"])
 
 observed_stat
 ```
@@ -71,7 +71,7 @@ calc_statistic<- function(df){
     group_by(NativePlant) %>%
     summarize(mean=mean(abundance), .groups="drop")
   #finally calculates test statistic= the difference between average abundances of each group
-  obs_stat <- df3$mean[df3$NativePlant=="1"]- df3$mean[df3$NativePlant=="0"]
+  obs_stat <- abs(df3$mean[df3$NativePlant=="1"]- df3$mean[df3$NativePlant=="0"])
   return(obs_stat)
   }
 
@@ -113,7 +113,7 @@ calc_stat_shuffled<- function(df){
   df3<- df2 %>%
     group_by(NativePlantShuffled) %>%
     summarize(mean=mean(abundance), .groups="drop")
-  obs_stat <- df3$mean[df3$NativePlantShuffled=="1"]- df3$mean[df3$NativePlantShuffled=="0"]
+  obs_stat <- abs(df3$mean[df3$NativePlantShuffled=="1"]- df3$mean[df3$NativePlantShuffled=="0"])
   return(obs_stat)
   }
 
