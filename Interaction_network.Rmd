@@ -9,7 +9,7 @@ read in cleaned data
 clean_data<- read.csv("clean_data/HJ_data.csv")
 ```
 
-keep only two necessary columns for this visualization
+keep only plant and pollinator species columns
 ```{r}
 library(tidyr)
 library(dplyr)
@@ -61,10 +61,75 @@ str(interactions_net3d)
 
 make network visualization- we chose the Sankey plot
 ```{r}
-sankeyNetwork(Links = interactions_net3d$links,
+all_species_network<- sankeyNetwork(Links = interactions_net3d$links,
              Nodes = interactions_net3d$nodes,
             Source = "source", Target = "target",
             Value = "value",  NodeID = "name", 
-            nodePadding = 0, height = 500)
+            nodePadding = 0, height = 1000)
+all_species_network
+```
+
+this visualization doesn't tell us much in regards to our questions about native vs. non-native interactions because it splits all interactions out by species
+
+We need to create a different network that groups species by whether they are native or not to visualize the interactions we are interested in
+
+create network of just native vs non-native plant-pollinator interactions
+```{r}
+#select native and non-native plant and pollinator columns in order to group their interactions
+int<- clean_data %>%
+  select(NativePlant, NativePollinator)
+```
+
+convert data frame into adjacency matrix
+```{r}
+## table the dataframe to sum up interactions between native and non-native plant and pollinator species and unclass it as a table so it is recognized as a matrix
+int_table<- table(int)
+
+# unclass it as a table so it is recognized as a matrix
+# the first variable in the table becomes rows and second becomes columns
+int_adj<- unclass(int_table)
+
+## check int_adj to see which column in the table becomes which side of the adjacency matrix- the columns represents pollinators and the rows represent plants
+int_adj
+
+## rename column and row names so they more accurately describe what they are showing
+colnames(int_adj) <- c("Non-native Pollinators", "Native Pollinators")
+rownames(int_adj) <- c("Non-native Plants", "Native Plants")
+
+#check that ithe new column and row names match the label
+int_adj
+```
+convert to igraph object
+```{r}
+#preserve weight (strength of interactions)
+int_igraph <- graph_from_biadjacency_matrix(int_adj, weight=TRUE)
+```
+
+convert to network 3d object
+```{r}
+### convert igraph to a network 3d object, not necessary to group because there are only 4 categories and we can easily see them all
+int_net3d <- igraph_to_networkD3(int_igraph, 
+                                       what = "both")
+```
+
+create network visualization
+```{r}
+##uses int_net3d links and nodes, grouping by native and non-native plants and pollinators
+native_network<- sankeyNetwork(Links = int_net3d$links,
+             Nodes = int_net3d$nodes,
+            Source = "source", Target = "target",
+            Value = "value",  NodeID = "name", 
+            nodePadding = 0, height = 300)
+native_network
+```
+
+save plot for future use
+```{r}
+## class of native_network is an htmlwidget
+# library correct package for saving these objects
+library(htmlwidgets)
+
+#save using this function which saves it to an html interactive file, including proper path
+saveWidget(native_network, file = "final_visuals/native_interaction_network.html")
 ```
 
