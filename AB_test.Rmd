@@ -1,0 +1,112 @@
+---
+title: "AB_test"
+output: html_document
+date: "2025-12-01"
+---
+read in data and library
+```{r}
+library(tidyverse)
+
+clean_data<- read.csv("clean_data/HJ_data.csv")
+
+
+# For reproducibility purposes ---- will need eventually, not run yet
+set.seed(123)
+```
+
+AB test description:
+- Null hypothesis: there is no difference in native bee abundance between between native and non-native plants.
+- Alternative hypothesis: there is higher native bee abundance at native plants than non-native plants.
+
+```{r}
+##only testing native pollinator interactions right now so filter out non-native pollinators
+#only keep columns relevant to this test- 
+native_bees<- clean_data %>%
+  filter(NativePollinator==1) %>%
+  select(PollinatorGenusSpecies, PlantGenusSpecies, NativePlant)
+#now all pollinators included are native so we don't need the NativePollinator column
+```
+
+Groups/treatments are native and non-native plants
+
+- Test statistic is the difference in mean abundances of native bees observed at native vs. non-native plants
+
+OR diff in abundances of native bees observed at native vs. non-native plants/abundance of those types of plants
+
+Test statistic is the difference between the ratios of bee abundance at either native or non-native plants divided by the number of native or non-native species present
+
+- Labels of native and non-native plants would be shuffled and test statistic recalculated to generate a histogram and p-value to determine if there is a significant difference between groups
+
+##figure out how to calculate test stat- end with finding observed stat
+```{r}
+##find abundance of native bees at native vs non-native plants
+bee_abundance<- native_bees %>%
+  group_by(NativePlant) %>%
+  summarize(abundance= n(), .groups="drop")
+
+#find the number of species for both native and non-native plants
+num_species<- native_bees %>%
+  group_by(NativePlant) %>%
+  summarize(unique_species= n_distinct(PlantGenusSpecies))
+
+bee_abundance
+num_species
+
+# divide bee abundance at native plants by the number of native species present
+bee_at_natives<- as.numeric(bee_abundance[2,"abundance"])
+num_native_plants<- as.numeric(num_species[2,"unique_species"])
+bee_abundance_over_num_native_species<- bee_at_natives/num_native_plants
+
+# divide bee abundance at non-native plants by the number of non-native species present
+bee_at_nonnatives<- as.numeric(bee_abundance[1,"abundance"])
+num_nonnative_plants<- as.numeric(num_species[1,"unique_species"])
+bee_abundance_over_num_nonnative_species<- bee_at_nonnatives/num_nonnative_plants
+
+#calculate observed test statistic= the difference between these two ratios
+observed_stat<- abs(bee_abundance_over_num_native_species-bee_abundance_over_num_nonnative_species)
+
+```
+
+
+- We will need a function to calculate the test statistic:
+- - It will group by native and non-native plants to calculate the abundance of native bee visits at each.
+- - It will then calculate the difference between those abundances and that is the test statistic
+```{r}
+#define function using above calculations
+calc_statistic<- function(x){
+  #return stat
+  }
+
+```
+
+##figure out shuffling and running one test
+```{r}
+
+```
+
+
+- We will need a second function that uses the first function to run a permutation test:
+- - It will reshuffle the native plant and non-native plant labels and re-run the above function to generate a new statistic
+```{r}
+
+```
+
+
+- We will then need a for loop to run the AB test:
+- - It will take the second function to reshuffle and re-run the test statistic over a number of loops to generate a vector of statistics
+```{r}
+##run for loop
+
+```
+
+
+- We will then plot these statistics and compare the observed statistic to the histogram to see if there is a significant difference between the two groups (native and non-native plants).
+```{r}
+##plot histogram- results from for loop AND observed test statistic
+```
+
+
+- This will also be for question 1.
+
+
+
