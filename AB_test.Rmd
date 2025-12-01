@@ -59,14 +59,18 @@ observed_stat
 - - It will group by native and non-native plants to calculate the abundance of native bee visits at each.
 - - It will then calculate the difference between those abundances and that is the test statistic
 ```{r}
-#define function using above calculations
+####define function using above calculations
+### this function calculates the observed statistic by first finding the abundance of native bees per plant species and then taking the average of those abundances for both native and non-native groups of plant species
 calc_statistic<- function(df){
+  #first finds the abundance of native bee interactions for each plant species
   df2<- df %>%
     group_by(PlantGenusSpecies, NativePlant) %>%
     summarize(abundance= n(), .groups="drop")
+  #next finds the average abundance for species based on group (native or non-native plants)
   df3<- df2 %>%
     group_by(NativePlant) %>%
     summarize(mean=mean(abundance), .groups="drop")
+  #finally calculates test statistic= the difference between average abundances of each group
   obs_stat <- df3$mean[df3$NativePlant=="1"]- df3$mean[df3$NativePlant=="0"]
   return(obs_stat)
   }
@@ -94,11 +98,18 @@ native_bees_test$NativePlantShuffled<- native_bees_shuffle
 #check that the column was added
 head(native_bees_test)
 
-## new function for calculating test statistic with shuffled column instead of the original NativePlant column
+test2<- native_bees_test %>%
+    group_by(PlantGenusSpecies, NativePlantShuffled) %>%
+    summarize(abundance= n(), .groups="drop")
+
+### new function for calculating test statistic with shuffled column instead of the original NativePlant column
+### this function calculates the test statistic. It functions the same way as the calc_stat function except it uses the re-shuffled NativePlantShuffled labels instead of the original NativePlant labels that the first function used to calculate the observed statistic.
 calc_stat_shuffled<- function(df){
+  #first finds the abundance of native bee interactions for each plant species given a dataframe
   df2<- df %>%
     group_by(PlantGenusSpecies, NativePlantShuffled) %>%
     summarize(abundance= n(), .groups="drop")
+  #next finds the average abundance for species based on group (native or non-native plants)
   df3<- df2 %>%
     group_by(NativePlantShuffled) %>%
     summarize(mean=mean(abundance), .groups="drop")
@@ -118,11 +129,15 @@ calc_stat_shuffled(native_bees_test)
 ## for reproducibility
 set.seed(123)
 
-## function to run shuffling and test with calc_stat_shuffled
+#### function to run shuffling and test with calc_stat_shuffled
+### this function creates a vector of shuffled labels from the NativePlant column from a given dataframe and adds that vector to a new column in the dataframe. It then calculates a test statistic given the newly re-shuffled lables in the dataframe using the calc-stat-shuffled function defined above.
 run_one_test<- function(df){
+  #first create a vector of shuffled labels (native or non-native plant) from the NativePlant column, without replacing values after they were sampled and making it the same length as the original NativePlant column so the same number of native and non-native labels are present
   shuffled_labels<- sample(df$NativePlant,
                            nrow(df), replace=FALSE)
+  # next add the shuffled vector back to the dataframe
   df$NativePlantShuffled<- shuffled_labels
+  # finally calculate the new test statistic from the shuffled labels using the calc_stat_shuffled function
   test_stat<- calc_stat_shuffled(df)
   return(test_stat)
 }
@@ -139,9 +154,12 @@ run_one_test(native_bees)
 ## set up empty vector to fill with test statistic values
 test_stats<- vector(mode="numeric", length=0)
 
-##create for loop
+#### create for loop
+### this for loop runs 1000 permutation tests using the run_one_test function defined above and adds each value to an originally empty vector of test statistics
 for (i in 1:1000){
+  # first run a permuation test with the run_one_test function to get a test statistic back
   one_test<- run_one_test(native_bees)
+  # next add that new test statistic to the test_stats vector
   test_stats<- append(test_stats, one_test)
 }
 
