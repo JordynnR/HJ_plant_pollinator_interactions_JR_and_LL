@@ -39,12 +39,12 @@ test stat= number of bee interactions per species then take mean number of inter
 ```{r}
 ## number of bee observations per plant species
 # will use this dataframe for shuffling labels
-abundance_by_plant<- native_bees %>%
+observations_by_plant<- native_bees %>%
   group_by(PlantGenusSpecies, NativePlant) %>%
   summarize(abundance= n(), .groups="drop")
 
 ## find average number of interactions per species based on group (native vs. non-native)
-av_interactions<- abundance_by_plant %>%
+av_interactions<- observations_by_plant %>%
   group_by(NativePlant) %>%
   summarize(mean_interactions= mean(abundance), .groups="drop")
 
@@ -60,24 +60,20 @@ observed_stat
 - - It will then calculate the difference between those abundances and that is the test statistic
 ```{r}
 ####define function using above calculations
-### this function calculates the observed statistic by first finding the abundance of native bees per plant species and then taking the average of those abundances for both native and non-native groups of plant species
+### this function calculates the observed statistic by first finding the average of observations per species for both native and non-native groups of plant species
 calc_statistic<- function(df){
-  #first finds the abundance of native bee interactions for each plant species
+  #first find the average abundance for species based on group (native or non-native plants)
   df2<- df %>%
-    group_by(PlantGenusSpecies, NativePlant) %>%
-    summarize(abundance= n(), .groups="drop")
-  #next finds the average abundance for species based on group (native or non-native plants)
-  df3<- df2 %>%
     group_by(NativePlant) %>%
     summarize(mean=mean(abundance), .groups="drop")
-  #finally calculates test statistic= the difference between average abundances of each group
-  obs_stat <- abs(df3$mean[df3$NativePlant=="1"]- df3$mean[df3$NativePlant=="0"])
+  #next calculate observed statistic= the difference between average abundances of each group
+  obs_stat <- abs(df2$mean[df2$NativePlant=="1"]- df2$mean[df2$NativePlant=="0"])
   return(obs_stat)
   }
 
 
 ## test it works- should match observed statistic above of 88.63158
-calc_statistic(native_bees)
+calc_statistic(observations_by_plant)
 ```
 
 ##figure out shuffling and running one test
@@ -85,40 +81,33 @@ calc_statistic(native_bees)
 ## for reproducibility
 set.seed(123)
 
-##shuffle label column from native_bees
-native_bees_shuffle <-  sample(native_bees$NativePlant, 
-                         nrow(native_bees), replace=FALSE)
+##shuffle label column from observations_by_plant to shuffle whether a given species is native or not
+by_species_shuffle <-  sample(observations_by_plant$NativePlant, 
+                         nrow(observations_by_plant), replace=FALSE)
 
 ## create data frame to use for test without altering og
-native_bees_test<- native_bees
+by_species_test<- observations_by_plant
 
 #create new column with shuffled labels
-native_bees_test$NativePlantShuffled<- native_bees_shuffle
+by_species_test$NativePlantShuffled<- by_species_shuffle
 
 #check that the column was added
-head(native_bees_test)
-
-test2<- native_bees_test %>%
-    group_by(PlantGenusSpecies, NativePlantShuffled) %>%
-    summarize(abundance= n(), .groups="drop")
+head(by_species_test)
 
 ### new function for calculating test statistic with shuffled column instead of the original NativePlant column
 ### this function calculates the test statistic. It functions the same way as the calc_stat function except it uses the re-shuffled NativePlantShuffled labels instead of the original NativePlant labels that the first function used to calculate the observed statistic.
 calc_stat_shuffled<- function(df){
-  #first finds the abundance of native bee interactions for each plant species given a dataframe
+  #first find the average abundance for species based on group with shuffled labels (native or non-native plants)
   df2<- df %>%
-    group_by(PlantGenusSpecies, NativePlantShuffled) %>%
-    summarize(abundance= n(), .groups="drop")
-  #next finds the average abundance for species based on group (native or non-native plants)
-  df3<- df2 %>%
     group_by(NativePlantShuffled) %>%
     summarize(mean=mean(abundance), .groups="drop")
-  obs_stat <- abs(df3$mean[df3$NativePlantShuffled=="1"]- df3$mean[df3$NativePlantShuffled=="0"])
-  return(obs_stat)
+  #next calculate test statistic= the difference between averages observations per group
+  stat <- abs(df2$mean[df2$NativePlantShuffled=="1"]- df2$mean[df2$NativePlantShuffled=="0"])
+  return(stat)
   }
 
-#test with native_bees after it's been shuffled once, run whole cell a few times to ensure this gives different numbers: it does
-calc_stat_shuffled(native_bees_test)
+#test with by_species_test after it's been shuffled once, run whole cell a few times to ensure this gives different numbers: it does
+calc_stat_shuffled(by_species_test)
 
 ```
 
@@ -143,7 +132,7 @@ run_one_test<- function(df){
 }
 
 ## test function- run a couple times to ensure you get different results
-run_one_test(native_bees)
+run_one_test(observations_by_plant)
 
 ```
 
@@ -158,7 +147,7 @@ test_stats<- vector(mode="numeric", length=0)
 ### this for loop runs 1000 permutation tests using the run_one_test function defined above and adds each value to an originally empty vector of test statistics
 for (i in 1:1000){
   # first run a permuation test with the run_one_test function to get a test statistic back
-  one_test<- run_one_test(native_bees)
+  one_test<- run_one_test(observations_by_plant)
   # next add that new test statistic to the test_stats vector
   test_stats<- append(test_stats, one_test)
 }
@@ -175,8 +164,10 @@ find p-value
 ```{r}
 ## calculate p-value
 # how probable that test stats are equal to observed or farther in direction of alt hypothesis
-p_val <- mean(abs(test_stats)<= abs(observed_stat))
+p_val <- mean(abs(test_stats) >= abs(observed_stat))
 p_val
+
+##include apis mellifera and do it again to see if it's even more different
 ```
 
 - We will then plot these statistics and compare the observed statistic to the histogram to see if there is a significant difference between the two groups (native and non-native plants).
