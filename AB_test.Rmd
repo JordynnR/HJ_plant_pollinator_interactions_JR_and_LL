@@ -154,7 +154,7 @@ find p-value
 p_val <- mean(abs(test_stats) >= abs(observed_stat))
 p_val
 
-##include apis mellifera and do it again to see if it's even more different
+## gives 0.584= not significant
 ```
 
 ##plot histogram of test statistics and observed statistic to visualize if there is a difference
@@ -170,7 +170,7 @@ test_hist<- ggplot(test_stats_df) +
 
 save ggplot to visualizations folder
 ```{r}
-ggsave("final_visuals/native_bees_AB_test_hist", plot=test_hist)
+ggsave("final_visuals/native_bees_AB_test_hist.png", plot=test_hist)
 ```
 
 
@@ -193,15 +193,22 @@ test_w_apis<- vector(mode="numeric", length=0)
 
 #new for loop to run tests with non-native bees included
 for (i in 1:1000){
-  # first run a permuation test with the run_one_test function to get a test statistic back
   one_test_w_apis<- run_one_test(obs_by_plant_w_apis)
-  # next add that new test statistic to the test_stats vector
-  test_w_apis<- append(test_w_apis, one_test)
+  test_w_apis<- append(test_w_apis, one_test_w_apis)
 }
 
 #p-value with non-native bees included
 p_val_w_apis <- mean(abs(test_w_apis) >= abs(obs_w_apis))
 p_val_w_apis
+#gives 0.879= even closer to null
+
+# convert to dataframe to plot
+test_w_apis_df<- as.data.frame(test_w_apis)
+
+# plot new histogram when including non-native bees
+ggplot(test_w_apis_df) +
+  geom_histogram(aes(x=test_w_apis)) +
+  geom_point(aes(x=obs_w_apis, y=0),color="red")
 
 ```
 
