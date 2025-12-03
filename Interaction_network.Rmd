@@ -105,7 +105,7 @@ create network of just native vs non-native plant-pollinator interactions
 ```{r}
 #select native and non-native plant and pollinator columns in order to group their interactions
 int<- clean_data %>%
-  select(NativePlant, NativePollinator)
+  select(NativePollinator, NativePlant)
 ```
 
 convert data frame into adjacency matrix
@@ -117,20 +117,24 @@ int_table<- table(int)
 # the first variable in the table becomes rows and second becomes columns
 int_adj<- unclass(int_table)
 
-## check int_adj to see which column in the table becomes which side of the adjacency matrix- the columns represents pollinators and the rows represent plants
+##reorder columns and rows so group orders match other interaction network later
+reordered_int_adj <- int_adj[c(2, 1), c(2,1)]
+
+## check Int_adj and reordered_int_adj to make sure values still match and see which columns becomes which side of the adjacency matrix- found that the columns represents pollinators and the rows represent plants
 int_adj
+reordered_int_adj
 
 ## rename column and row names so they more accurately describe what they are showing
-colnames(int_adj) <- c("Non-native Pollinators", "Native Pollinators")
-rownames(int_adj) <- c("Non-native Plants", "Native Plants")
+colnames(reordered_int_adj) <- c("Native Plants", "Non-native Plants")
+rownames(reordered_int_adj) <- c("Native Pollinators", "Non-native Pollinators")
 
-#check that ithe new column and row names match the label
-int_adj
+#check that the new column and row names match the label
+reordered_int_adj
 ```
 convert to igraph object
 ```{r}
 #preserve weight (strength of interactions)
-int_igraph <- graph_from_biadjacency_matrix(int_adj, weight=TRUE)
+int_igraph <- graph_from_biadjacency_matrix(reordered_int_adj, weight=TRUE)
 ```
 
 convert to network 3d object
