@@ -165,7 +165,11 @@ test_stats_df<- as.data.frame(test_stats)
 ##plot histogram- results from for loop AND observed test statistic
 test_hist<- ggplot(test_stats_df) +
   geom_histogram(aes(x=test_stats)) +
+  labs(x="Test Statistic Value", y="Number of Cases", title="Test Statistic Distribution") +
   geom_point(aes(x=observed_stat, y=0),color="red")
+
+test_hist
+  
 ```
 
 save ggplot to visualizations folder
