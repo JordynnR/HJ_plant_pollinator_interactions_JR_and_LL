@@ -91,8 +91,9 @@ make network visualization- we chose the Sankey plot
 all_species_network<- sankeyNetwork(Links = interactions_net3d$links,
              Nodes = interactions_net3d$nodes,
             Source = "source", Target = "target",
-            Value = "value",  NodeID = "name", NodeGroup= "group",
-            nodePadding = 0, height = 1000)
+            Value = "value",  NodeID = "name", 
+            NodeGroup= "group", fontSize=15,
+            nodePadding = 0, height = 1400, width=450)
 all_species_network
 ```
 
@@ -145,8 +146,9 @@ create network visualization
 native_network<- sankeyNetwork(Links = int_net3d$links,
              Nodes = int_net3d$nodes,
             Source = "source", Target = "target",
-            Value = "value",  NodeID = "name", 
-            nodePadding = 0, height = 300)
+            Value = "value",  NodeID = "name",
+            fontSize= 14,
+            nodePadding = 0, height = 400, width=300)
 native_network
 ```
 
@@ -159,7 +161,15 @@ library(htmlwidgets)
 #save using this function which saves it to an html interactive file, including proper path
 saveWidget(native_network, file = "final_visuals/native_interaction_network.html")
 
+## need to save as an image for the poster
+#google says use webshot to take a screenshot of the saved html file
+library(webshot2)
+webshot("final_visuals/native_interaction_network.html", "final_visuals/native_interaction_network.png")
+
 ## save full plot too
 saveWidget(all_species_network, file = "final_visuals/all_species_network.html")
+
+webshot("final_visuals/all_species_network.html", "final_visuals/all_species_network.png")
+
 ```
 
