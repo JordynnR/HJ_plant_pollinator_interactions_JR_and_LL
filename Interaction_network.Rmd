@@ -152,7 +152,7 @@ native_network<- sankeyNetwork(Links = int_net3d$links,
             Source = "source", Target = "target",
             Value = "value",  NodeID = "name",
             fontSize= 14,
-            nodePadding = 0, height = 400, width=300)
+            nodePadding = 0, height = 500, width=250)
 native_network
 ```
 
