@@ -45,11 +45,38 @@ convert igraph to a network 3d object
 ```{r}
 library(networkD3)
 
-### find modules in order to use as vertices
-int_modules <- cluster_walktrap(interactions_igraph)
+###make meaningful groups- Native vs. non-native pollinators and plants
+## create a vector of all the node names in the igraph object
+node_names <- V(interactions_igraph)$name
 
-### assign vertices to modules
-groups <- membership(int_modules)
+## combine species names from both plant and pollinator columns to have one dataframe of all species names and native status
+#create separate dataframe of just pollinator species and native status
+pol_sp<- data.frame(
+  species= clean_data$PollinatorGenusSpecies, 
+  native= clean_data$NativePollinator, 
+  type= "Pollinator"
+)
+
+#create separate dataframe of just plant pollinator species and native status
+plant_sp<- data.frame(
+  species= clean_data$PlantGenusSpecies, 
+  native= clean_data$NativePlant, 
+  type= "Plant"
+)
+
+#combine into one dataframe of all species and native status
+combined_species<- rbind(pol_sp,plant_sp)
+
+#match combined_species to node_names so each species name is only listed once
+match_to_og_df <- combined_species[match(node_names, combined_species$species), ]
+
+##make groups based on a species type and native status
+groups <- ifelse(match_to_og_df$native == 1 & match_to_og_df$type=="Pollinator",
+                 "Native Pollinator",
+          ifelse(match_to_og_df$native == 0 & match_to_og_df$type=="Pollinator",
+                 "Non-native Pollinator",
+          ifelse(match_to_og_df$native == 1 & match_to_og_df$type=="Plant",
+                 "Native Plant", "Non-native Plant")))
 
 ### convert igraph to a network 3d object, using the modules as node values
 interactions_net3d <- igraph_to_networkD3(interactions_igraph, group=groups, 
@@ -64,7 +91,7 @@ make network visualization- we chose the Sankey plot
 all_species_network<- sankeyNetwork(Links = interactions_net3d$links,
              Nodes = interactions_net3d$nodes,
             Source = "source", Target = "target",
-            Value = "value",  NodeID = "name", 
+            Value = "value",  NodeID = "name", NodeGroup= "group",
             nodePadding = 0, height = 1000)
 all_species_network
 ```
@@ -123,7 +150,7 @@ native_network<- sankeyNetwork(Links = int_net3d$links,
 native_network
 ```
 
-save plot for future use
+save plots for future use
 ```{r}
 ## class of native_network is an htmlwidget
 # library correct package for saving these objects
@@ -131,5 +158,8 @@ library(htmlwidgets)
 
 #save using this function which saves it to an html interactive file, including proper path
 saveWidget(native_network, file = "final_visuals/native_interaction_network.html")
+
+## save full plot too
+saveWidget(all_species_network, file = "final_visuals/all_species_network.html")
 ```
 
