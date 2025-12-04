@@ -11,7 +11,7 @@ library(ggplot2)
 library(dplyr)
 
 
-clean_data <- read.csv("C:/UO_Biology/HJ_plant_pollinator_interactions_JR_and_LL/clean_data/HJ_data.csv")
+clean_data <- read.csv("clean_data/HJ_data.csv")
 
 spec(HJ_data)
 
@@ -39,27 +39,32 @@ clean_data %>%
 ```
 
 ```{r}
-#creating a summary of the plant, whether non native bees were observed, and the abudance of native bee records 
+#creating a summary of the plant, whether non native bees were observed, and the abundance of native bee records 
 
 plants <- clean_data %>%
-  group_by(PlantGenusSpecies) %>%
-  summarise(non_nativebee_present = any(NativePollinator == 0),
+  group_by(PlantGenusSpecies, NativePlant) %>%
+  summarise(non_nativebee_count = sum(NativePollinator == 0),
             nativebee_count = sum(NativePollinator ==1))
 plants
-table(plants$non_nativebee_present)
+table(plants$non_nativebee_count)
 #time to see if there is a difference in the counts of native bees due to the presence of non-native bees
 
 ```
 
 ```{r}
-#creating boxplot 
+#creating boxplot to compare abundances 
 
-ggplot(plants, aes(x = non_nativebee_present, y = nativebee_count))+
-  geom_boxplot(fill = "lightgreen", alpha = 0.6) +
+ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count))+
+  geom_point() +
+  xlim(0,1000)
   labs( x= "Non-native bee presence",
         y = "Native bee abundance",
-        title = "Native bee abundance relative to presence non-native bees")+
-  theme_minimal()
+        title = "Native bee abundance relative to presence non-native bees.")+
+  theme(axis.line = element_line(color = "black", size = 0.5))
+  scale_color_manual(values = c("Native" = "green", 
+                                "Non-native" = "orange")
+
+#need to work out how to make the font bigger for the labels.
 
 ```
 This is the opposite of our predictions. However one can observe a much larger range in native bee abundances for when non native bees are present. FALSE(n=51), TRUE(n=73). This boxplot includes bee observation from both native and non-native plants.  
@@ -80,7 +85,8 @@ plant_month_plot #shows each month twice, 1 for abundance of native plants (0) a
 bee_month_plot <- clean_data %>%
   filter(NativePollinator == 1) %>% 
   group_by(Month, NativePlant) %>%
-  summarise(native_bee_abundance = n(), .groups = "drop")
+  summarise(native_bee_abundance = n(), .groups = "drop")%>%
+  mutate(count(Month))
 
 bee_month_plot
 ```
@@ -92,30 +98,85 @@ the plots for these
 ggplot(plant_month_plot, aes(x = Month, y = plant_abundance, color = factor(NativePlant), group = NativePlant)) +
   geom_line(size = 1.2) +
   geom_point(size = 2) +
-  scale_color_manual(values = c("red", "green"),
+  scale_color_manual(values = c("orange", "green"),
                      labels = c("Non-native plants", "Native plants"))+
   labs(x= "Month", y = "Plant abundance",
        color = "Plant type",
        title = "Native vs. Non-native plant abundances by month") +
   theme_minimal()
+plant_month_plot
 
-
+#fairly sure this plot is wrong. start here when I come back to it
+```
+```{r}
+plant_month_plot
 ```
 
 
 ```{r}
 ggplot(bee_month_plot, aes(x = Month, y = native_bee_abundance, color = factor(NativePlant), group = NativePlant)) +
-  geom_line(size = 1.2) +
-  geom_point(size = 2) +
+  geom_line() +
+  geom_point() +
   scale_color_manual(values = c("red", "green"),
                      labels = c("Non-native plants", "Native plants"))+
   labs(x= "Month", y = "Native bee abundance",
        color = "Plant type",
        title = "Native bee observations on native vs. non-native plants by month") +
   theme_minimal()
+bee_month_plot
+
+
+```
+```{r}
+bee_month_plot
+
+#in July native bee abundance peaks 
+```
+```{r}
+#for non native and native plants, divide visitation of native bees by total number of native bee observations for each month then can compare each month
+new_plot <- clean_data %>%
+  filter(NativePollinator==1)%>%
+  group_by(Month, NativePlant) %>%
+  summarize(obs= n(), .groups = "drop")%>%
+  group_by(Month)%>%
+  mutate(total_visits = sum(visits),
+         proportion = visits / total_visits
+  )
+  new_plot
+
+colnames(clean_data)
+#take the difference between native and non-native plant abundance per month, and create a line plot.
+```
+```{r}
+#find the proportion, divide by number of observations of native bees for each month then can compare each month.
+test_plot <- clean_data %>%
+  filter(NativePollinator == 1) %>% 
+  group_by(Month, NativePlant) %>%
+  summarise(native_bee_abundance = n(), .groups = "drop") %>%
+  group_by(Month)%>% #total native bee obs per month
+  mutate(total_native_bees = sum(native_bee_abundance),
+         proportion = native_bee_abundance / total_native_bees) %>% #creating new column 'proportion'
+  ungroup()
+
+test_plot
 
 
 ```
 
+```{r}
+#plotting 
+ggplot(test_plot, aes(x=Month, y=proportion,
+                           color = factor(NativePlant), group = NativePlant))+
+  geom_line(size = 0.5) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("orange","green"),
+                     labels = c("Non-native plant species", "Native plant species")) +
+  labs(x = "Month",
+       y = "Proportion of native pollinator observations",
+       color = "Type of plant on which\nthe pollinator was observed",
+       title = "Proportion of native pollinator observations\non native vs. non-native plants by month.") +
+  theme(axis.line = element_line(color = "black", size = 0.5))
+
+```
 
 
