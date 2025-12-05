@@ -1,0 +1,11 @@
+---
+title: "Methods"
+output: html_document
+date: "2025-12-05"
+---
+Methods write-up to add to final write-up later:
+reference dataset_identification, proposed_workflow, and data_cleaning
+suggested: somewhat in order of flowcharts on poster, then analyses in order of questions
+
+
+
