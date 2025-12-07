@@ -1,0 +1,179 @@
+---
+title: "Network"
+output: html_document
+date: "2025-11-30"
+---
+
+read in cleaned data
+```{r}
+clean_data<- read.csv("clean_data/HJ_data.csv")
+```
+
+keep only plant and pollinator species columns
+```{r}
+library(tidyr)
+library(dplyr)
+
+##select only relevant columns- PollinatorGenusSpecies and PlantGenusSpecies
+interactions<- clean_data %>%
+  select(PollinatorGenusSpecies, PlantGenusSpecies)
+```
+
+##need to convert dataframe to matrix with bee species columns and plant rows
+convert data frame into adjacency matrix
+```{r}
+## table the dataframe to sum up interactions between each plant and pollinator species and unclass it as a table so it is recognized as a matrix
+interactions_adj<- unclass(table(interactions))
+
+#check class- should be matrix
+class(interactions_adj)
+```
+
+convert matrix to igraph object
+```{r}
+library(igraph)
+
+## convert regular adjacency matrix to igraph bipartite adjacency matrix
+# use weight=TRUE to preserve the strength of interactions (when there is more than 1 observation of a bee species interacting with a given plant species)
+interactions_igraph <- graph_from_biadjacency_matrix(interactions_adj, weight=TRUE)
+
+# check class- should be igraph
+class(interactions_igraph)
+```
+
+convert igraph to a network 3d object
+```{r}
+library(networkD3)
+
+###make meaningful groups- Native vs. non-native pollinators and plants
+## create a vector of all the node names in the igraph object
+node_names <- V(interactions_igraph)$name
+
+## combine species names from both plant and pollinator columns to have one dataframe of all species names and native status
+#create separate dataframe of just pollinator species and native status
+pol_sp<- data.frame(
+  species= clean_data$PollinatorGenusSpecies, 
+  native= clean_data$NativePollinator, 
+  type= "Pollinator"
+)
+
+#create separate dataframe of just plant pollinator species and native status
+plant_sp<- data.frame(
+  species= clean_data$PlantGenusSpecies, 
+  native= clean_data$NativePlant, 
+  type= "Plant"
+)
+
+#combine into one dataframe of all species and native status
+combined_species<- rbind(pol_sp,plant_sp)
+
+#match combined_species to node_names so each species name is only listed once
+match_to_og_df <- combined_species[match(node_names, combined_species$species), ]
+
+##make groups based on a species type and native status
+groups <- ifelse(match_to_og_df$native == 1 & match_to_og_df$type=="Pollinator",
+                 "Native Pollinator",
+          ifelse(match_to_og_df$native == 0 & match_to_og_df$type=="Pollinator",
+                 "Non-native Pollinator",
+          ifelse(match_to_og_df$native == 1 & match_to_og_df$type=="Plant",
+                 "Native Plant", "Non-native Plant")))
+
+### convert igraph to a network 3d object, using the modules as node values
+interactions_net3d <- igraph_to_networkD3(interactions_igraph, group=groups, 
+                                       what = "both")
+
+## check that it has two list items to use for network visualization- links and nodes
+str(interactions_net3d)
+```
+
+make network visualization- we chose the Sankey plot
+```{r}
+all_species_network<- sankeyNetwork(Links = interactions_net3d$links,
+             Nodes = interactions_net3d$nodes,
+            Source = "source", Target = "target",
+            Value = "value",  NodeID = "name", 
+            NodeGroup= "group", fontSize=15,
+            nodePadding = 0, height = 1400, width=450)
+all_species_network
+```
+
+this visualization doesn't tell us much in regards to our questions about native vs. non-native interactions because it splits all interactions out by species
+
+We need to create a different network that groups species by whether they are native or not to visualize the interactions we are interested in
+
+create network of just native vs non-native plant-pollinator interactions
+```{r}
+#select native and non-native plant and pollinator columns in order to group their interactions
+int<- clean_data %>%
+  select(NativePollinator, NativePlant)
+```
+
+convert data frame into adjacency matrix
+```{r}
+## table the dataframe to sum up interactions between native and non-native plant and pollinator species and unclass it as a table so it is recognized as a matrix
+int_table<- table(int)
+
+# unclass it as a table so it is recognized as a matrix
+# the first variable in the table becomes rows and second becomes columns
+int_adj<- unclass(int_table)
+
+##reorder columns and rows so group orders match other interaction network later
+reordered_int_adj <- int_adj[c(2, 1), c(2,1)]
+
+## check Int_adj and reordered_int_adj to make sure values still match and see which columns becomes which side of the adjacency matrix- found that the columns represents pollinators and the rows represent plants
+int_adj
+reordered_int_adj
+
+## rename column and row names so they more accurately describe what they are showing
+colnames(reordered_int_adj) <- c("Native Plants", "Non-native Plants")
+rownames(reordered_int_adj) <- c("Native Pollinators", "Non-native Pollinators")
+
+#check that the new column and row names match the label
+reordered_int_adj
+```
+convert to igraph object
+```{r}
+#preserve weight (strength of interactions)
+int_igraph <- graph_from_biadjacency_matrix(reordered_int_adj, weight=TRUE)
+```
+
+convert to network 3d object
+```{r}
+### convert igraph to a network 3d object, not necessary to group because there are only 4 categories and we can easily see them all
+int_net3d <- igraph_to_networkD3(int_igraph, 
+                                       what = "both")
+```
+
+create network visualization
+```{r}
+##uses int_net3d links and nodes, grouping by native and non-native plants and pollinators
+native_network<- sankeyNetwork(Links = int_net3d$links,
+             Nodes = int_net3d$nodes,
+            Source = "source", Target = "target",
+            Value = "value",  NodeID = "name",
+            fontSize= 14,
+            nodePadding = 0, height = 500, width=250)
+native_network
+```
+
+save plots for future use
+```{r}
+## class of native_network is an htmlwidget
+# library correct package for saving these objects
+library(htmlwidgets)
+
+#save using this function which saves it to an html interactive file, including proper path
+saveWidget(native_network, file = "final_visuals/native_interaction_network.html")
+
+## need to save as an image for the poster
+#google says use webshot to take a screenshot of the saved html file
+library(webshot2)
+webshot("final_visuals/native_interaction_network.html", "final_visuals/native_interaction_network.png")
+
+## save full plot too
+saveWidget(all_species_network, file = "final_visuals/all_species_network.html")
+
+webshot("final_visuals/all_species_network.html", "final_visuals/all_species_network.png")
+
+```
+

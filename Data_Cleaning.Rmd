@@ -4,12 +4,6 @@ output: html_document
 date: "2025-11-19"
 ---
 
-Questions for Rebecca:
-1. network- do we need to choose/keep one of the columns in the spreadsheet of the interaction strength values? sankey plot maybe- investigate required inputs
-2. would spatial data even be useful to us
-3. native vs. non-native plants- how to deal with mixed??
-
-
 columns to keep:
 GenusSpecies
 PlantGenusSpecies
