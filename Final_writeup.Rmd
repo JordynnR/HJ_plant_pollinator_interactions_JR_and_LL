@@ -4,7 +4,7 @@ output: html_document
 date: "2025-12-05"
 bibliography: Bibliography.bib
 ---
-Intro:
+1. Introduction:
   Invasive species are known to have a negative impact on native species and ecosystems around the world. Non-native plant invasions contribute to dwindling populations of native plant species that are ecologically and culturally important. Similarly, non-native pollinators can outcompete native species and contribute to population decline. This can further affect native plants that rely on native pollinators for efficient pollination if invasive species don’t replace the same functions. However, the specific effects invasions can have on plant-pollinator interactions can vary. A review paper by @Traveset_2006 explains that invasive pollinators can have little to no impact on highly specialized native plant-pollinator mutualisms because invasive pollinators tend to be generalists and will interact with a wider variety of plant species. Invasive plants can have more of an impact on these native mutualisms, especially if they are more attractive to native pollinators and outcompete native plants. A study by @Morales_2009  found that native or ‘alien’ species can negatively impact pollinator visitation rates and reproduction of native co-flowering focal species, which may contribute to their ability to dominate landscapes and alter plant community and structure. Invasive pollinators and plants may even interact with each other to have a greater impact on native plant-pollinator communities. For example, @Barthell_2001 investigated the interactions between an invasive bee, Apis mellifera, and an invasive plant, Centaurea solstitialis, and found that A. mellifera increases the reproductive success of C. solstitialis, suggesting that invasive plant-pollinator mutualisms could contribute to more successful plant invasions, further impacting native plant-pollinator interactions.
   With all of these variable effects, it is important to understand native plant-pollinator interactions locally in order to better predict how invasions may impact the community in a certain place. More specific place-based studies have investigated how invasive pollinators can impact native plant-pollinator communities, primarily due to competition with native pollinators. For example, @Dohzono_2008 found that a Japanese native bumblebee Bombus ardens visited a native plant, Corydalis ambigua, much less frequently when the invasive Bombus terrestris visited. This resulted in lower reproduction for the plant because B. terrestris robs nectar without contributing to pollination. Most of the research on invasive pollinators centers on the very successful Apis mellifera, or European honeybee, which has been brought all over the world to live alongside agricultural fields in order to pollinate crops and make honey. But their introduction into any ecosystem can have an impact on native bees and plants. For example, when @Thomson_2004 studied the interactions between a California native social bee, B. occidentalis, and A. mellifera, they found that B. occidentalis colonies located closer to A. mellifera hives had lower reproductive success, which could have a further impact on plant species that rely on this native bee. Another study by @Dupont_2004 focusing on the impact of A. mellifera found that these pollinators can disrupt native pollination networks by altering native bee foraging behaviours and increasing competition for nectar in flowering populations. Similarly in a meta-analysis paper, @Morales_2009 monitored visitation rate and reproductive success of native plant species located next to alien plant species. The paper proposed that the two most important properties of alien plant competition are floral abundance and the similarity of floral morphologies with native plants. The latter in particular can encourage native bees to pollinate non-natives, while specialist native plants are out-competed.  
   However, not all research has found a negative impact of invasive species on native plant-pollinator networks. In a study by @Borchardt_2025 on plant-pollinator interactions in prairie strips alongside agricultural fields in California, they found little to no impact of A. mellifera presence on native bee community composition from June to August. Similarly, @Spessa_1999 studied the impact of honeybee presence on a native colletid bee Amphylaeus morosus and detected no negative impact, concluding that nectar and pollen were not limiting for A. morosus and the null hypothesis was accepted, even though there was a resource overlap between the two study species. With the variable results from different studies, it stands to reason that different species of pollinator will be limited by different factors @Paini_2004.
@@ -14,14 +14,298 @@ Intro:
 
 Methods: (include data steps, workflow, analysis steps/description)
 
+2. Data / Data wrangling:
 
-Results: from each analysis, organize by question
+##read data in
+raw_data<- read.csv("raw_data/spec_net_copy.csv")
 
-1. 
+```
 
-2. 
+##Get rid of unwanted columns, keep GenusSpecies, PlantGenusSpecies & Date.
+```{r}
+library(tidyverse)
+library(dplyr)
+##only keeping date, pollinator species and plant species columns
+kept_columns<- raw_data %>%
+  select(Date, GenusSpecies, PlantGenusSpecies) %>%
+  rename(PollinatorGenusSpecies= GenusSpecies) %>% #rename GenusSpecies to PollinatorGenusSpecies to more easily differentiate
+  dplyr::filter(PollinatorGenusSpecies!="") %>%
+  dplyr::filter(PlantGenusSpecies!="")           #get rid of empty rows
 
-3. 
+```
+
+transform date to month number
+
+```{r}
+class(kept_columns) #test class= data frame
+
+#replacing the values in the Date column with only the first number of each, which is the month
+kept_columns$Date <- sub("^(\\d{1,2})/.*", "\\1", kept_columns$Date)
+
+#rename Date to Month
+kept_columns <- kept_columns%>%
+  rename(Month = Date)
+
+##test to make sure months are now just months, should be single numbers and not a full date
+table(kept_columns$Month)
+
+#change month values from characters to numerics
+kept_columns$Month<- as.numeric(kept_columns$Month)
+
+#test that months are numeric
+class(kept_columns$Month)
+```
+
+use regex to filter out spp/sp (unknown) species
+```{r}
+#test to see what pollinator species name are present
+unique(kept_columns$PollinatorGenusSpecies)
+#found a lot of unknown species that we can't use because we can't determine whether they are native or not for our analysis, so we will use regular expressions to filter them out
+
+##create regex to use for filtering
+#looks for pattern ending in any variation of spp/sp with any number of "."; got from the class demo
+sp_ending_regex <- "(^\\s*[A-Za-z]+\\s+)[sS][pP]{1,2}\\.?\\s*$"
+#looks for pattern ending in "sp."+"any numeric" with optional space or . in between; asked copilot
+sp_number_regex <- "sp\\.?\\s?[0-9]+$"
+#looks for pattern that is only genus; got from class demo
+genus_only_regex <-   "^\\s*([A-Za-z]+)\\s*$"
+
+#filter rows that are not (!) in the reg expressions above (had to make 2 for 2 different formats)
+no_unknown<- kept_columns %>%
+  dplyr::filter(!(PollinatorGenusSpecies = grepl(sp_ending_regex,PollinatorGenusSpecies))) %>%
+  dplyr::filter(!(PollinatorGenusSpecies = grepl(sp_number_regex,PollinatorGenusSpecies))) %>%
+  dplyr::filter(!(PollinatorGenusSpecies = grepl(genus_only_regex,PollinatorGenusSpecies)))
+
+```
+
+fix plant species with no space
+```{r}
+#test to see what plant species name are present
+unique(no_unknown$PlantGenusSpecies)
+#didn't find any unknown plant species, but 1 plant species is listed with no space as Liliumcolumbianum
+
+#replace the incorrect species format with the right format using a regex and the exact correct wording
+no_unknown$PlantGenusSpecies<- gsub("^Liliumcolumbianum$", "Lilium columbianum", no_unknown$PlantGenusSpecies)
+
+#check to see that it's been replaced
+unique(no_unknown$PlantGenusSpecies)
+
+```
+
+make column for native plants- 1 for native (TRUE), 0 for non-native (FALSE)
+```{r}
+##Use unique to pull out unique species in PlantGenusSpecies
+plant_species<- unique(no_unknown$PlantGenusSpecies)
+##copied and pasted this vector and asked copilot to reference Oregon Flora and Calflora to see which plant species listed in the vector are native and which are non-native
+##according to Oregon Flora and Calflora, two species has both a native version and introduced version from Eurasia: Achillea millefolium and Prunella vulgaris- decided to include them as natives because the species still counts as native
+##there were also four species that are non-native: Rumex acetosella, Hypericum perforatum, Taraxacum officinale, Vicia sativa
+
+#vector representing native species without the non-native species or those that could go either way
+native_plants<- c(
+  "Delphinium menziesii","Vicia americana","Viola orbiculata","Lathyrus nevadensis",
+  "Potentilla gracilis","Polygonum phytolaccifolium","Ligusticum grayi","Orthocarpus imbricatus",
+  "Aquilegia formosa","Cirsium callilepis","Eriogonum compositum","Symphoricarpos mollis",
+  "Erigeron foliosus","Senecio triangularis","Lupinus laxiflorus","Fragaria virginiana",
+  "Rudbeckia occidentalis","Aster ledophyllus","Solidago canadensis","Penstemon procerus",
+  "Potentilla glandulosa","Mimulus nanus","Mimulus guttatus","Montia parvifolia",
+  "Mimulus tilingii","Phacelia hastata","Calochortus subalpinus","Eriophyllum lanatum",
+  "Amelanchier alnifolia","Penstemon cardwellii","Arenaria macrophylla","Sedum oreganum",
+  "Silene douglasii","Arctostaphylos nevadensis","Sorbus sitchensis","Rosa gymnocarpa",
+  "Castilleja hispida","Zigadenus venenosus","Phlox gracilis","Collinsia parviflora",
+  "Epilobium anagallidifolium","Angelica arguta","Gilia capitata","Eriogonum umbellatum",
+  "Acmispon nevadensis","Agoseris heterophylla","Eriogonum nudum","Lomatium martindalei",
+  "Erysimum asperum","Arenaria capillaris","Ranunculus uncinatus","Clarkia amoena",
+  "Lomatium triternatum","Rainiera stricta","Stachys cooleyae","Holodiscus dumosus",
+  "Polemonium carneum","Dichelostemma congestum","Gayophytum humile","Stellaria crispa",
+  "Rubus parviflorus","Heracleum lanatum","Tiarella trifoliata","Smilacina racemosa",
+  "Anaphalis margaritacea","Chamerion angustifolium","Dodecatheon jeffreyi","Mertensia bella",
+  "Boykinia major","Perideridia gairdneri","Microseris nutans","Campanula scouleri",
+  "Castilleja miniata","Apocynum androsaemifolium","Senecio integerrimus","Erigeron aliceae",
+  "Vancouveria hexandra","Mitella pentandra","Mimulus moschatus","Montia sibirica",
+  "Sedum oregonense","Hypericum anagalloides","Mertensia paniculata","Platanthera sparsiflora",
+  "Cerastium arvense","Erythronium grandiflorum","Hydrophyllum occidentale","Stachys chamissonis",
+  "Lilium columbianum","Drymocallis glandulosa","Epilobium ciliatum","Lithophragma parviflorum",
+  "Erysimum capitatum","Symphoricarpos albus","Saxifraga occidentalis","Hieracium cynoglossoides",
+  "Holodiscus discolor","Claytonia lanceolata","Phacelia heterophila","Stachys rigida",
+  "Xerophyllum tenax","Agoseris aurantiaca","Collinsia grandiflora","Solidago elongata",
+  "Solidago lepida","Navarretia divaricata","Symphyotrichum foliaceum","Gayophytum diffusum",
+  "Maianthemum stellatum","Barbarea orthoceras","Mimulus rubellus","Lewisia triphylla",
+  "Viola glabella","Pedicularis bracteosa","Acmispon americanus","Lupinus latiflorus",
+  "Valeriana sitchensis","Epilobium oregonense", "Achillea millefolium", "Prunella vulgaris"
+)
+
+#check length to make sure copilot gave back the right number of species excluding the non-natives, should be 118
+length(native_plants)
+
+##add NativePlant column to dataframe- if listed plant species in PlantGenusSpecies is in the native_plants vector, NativePlant will have TRUE, otherwise it will have FALSE
+w_native_plants<- no_unknown %>%
+  mutate(
+    NativePlant = ifelse (PlantGenusSpecies %in% native_plants, yes=1, no=0)
+  )
+
+#check that values came out right
+unique(w_native_plants$NativePlant)
+```
+
+add native pollinator column- 1 for native, 0 for non-native
+```{r}
+##used common non-native list from Lauren
+non_native_bees<- c("Apis mellifera", "Megachile rotundata", "Anthidium manicatum", "Osmia cornifrons")
+
+w_native_pollinators<- w_native_plants %>%
+  mutate(
+    NativePollinator = ifelse (PollinatorGenusSpecies %in% non_native_bees, yes=0, no=1)
+  )
+
+#check that values came out right
+unique(w_native_pollinators$NativePollinator)
+```
+check final dataframe and export file to repository
+```{r}
+print(w_native_pollinators)
+
+#reorder columns
+re_ordered<- w_native_pollinators %>%
+  select(Month, PollinatorGenusSpecies, NativePollinator, PlantGenusSpecies, NativePlant)
+
+re_ordered
+
+#export to folder in repository called clean_data (this folder needs to be created locally)
+write.csv(re_ordered, "clean_data/HJ_data.csv", row.names = TRUE)
+
+```
+3. Data Analysis / Hypothesis testing 
+ 
+ Interaction data: group species by type (plant vs. pollinator) and native 
+status; create flow interaction network
+
+ Permutation test: ran AB test to test for a difference in native pollinator 
+observations between native vs. non-native plants
+
+ Pollinator competition: group by plant species; graph native bee 
+observations by non-native bee observations
+
+ Native bee preference over time: group by type of plant visited (native or 
+non-native); plot proportion of observations to each type per month
+
+
+4. Visualisations 
+
+Research question 2:Do non-native bees compete with native bees for access to native plants in high elevation meadows?
+```{r}
+#loading in cleaned data file
+
+clean_data <- read.csv("clean_data/HJ_data.csv")
+
+clean_data
+```
+
+```{r}
+#Check the count of observations for native vs non-native pollinators
+clean_data %>%
+  group_by(NativePollinator) %>%
+  summarise(count = n())
+#13579 non native bee individuals
+#15974 native bee individuals
+
+clean_data %>%
+  group_by(NativePlant) %>%
+  summarise(count = n())
+#1207 non native plants 
+#28346 native plants 
+
+```
+
+```{r}
+#creating a summary of the plant, whether non native bees were observed, and the abundance of native bee records 
+
+plants <- clean_data %>%
+  group_by(PlantGenusSpecies, NativePlant) %>%
+  summarise(non_nativebee_count = sum(NativePollinator == 0),
+            nativebee_count = sum(NativePollinator ==1))
+plants
+table(plants$non_nativebee_count)
+#time to see if there is a difference in the counts of native bees due to the presence of non-native bees
+
+```
+
+```{r, warning = FALSE}
+#creating scatter plot to compare abundances at each species of plant
+
+ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(NativePlant)))+
+  geom_smooth(size=0.8)+
+  geom_point() +
+   scale_color_manual(values = c("darkorange","darkgreen"),
+                     labels = c("Non-native plant species", "Native plant species"))+
+  labs( x= "Non-native bee abundance",
+        y = "Native bee abundance",
+        title = "Native vs. Non-native Pollinator Abundance across Native and Non-native\nPlant Species", color = "Plant type")+
+  theme(axis.line = element_line(color = "black", size = 0.5))+
+  theme(legend.position = c(0.2,0.8))+
+  theme(text= element_text(size = 15))+
+  facet_wrap(~NativePlant, scale = "free_x") 
+  
+```
+
+Insert figure 2
+
+```{r}
+#creating second zoomed in plot
+
+ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(NativePlant)))+
+  geom_smooth(size =0.8)+
+  geom_point() +
+  xlim(0,600)+
+   scale_color_manual(values = c("darkorange","darkgreen"),
+                     labels = c("Non-native plant species", "Native plant species"))+
+  labs( x= "Non-native bee abundance",
+        y = "Native bee abundance",
+        title = "Native vs. Non-native Pollinator Abundance\nacross Native and Non-native Plant Species", color = "Plant type")+
+  theme(axis.line = element_line(color = "black", size = 0.5))+
+  theme(legend.position = c(0.7,0.8))+
+  theme(text= element_text(size = 15))
+```
+
+Insert figure 3 
+
+Creating the phenology line plot for research question 3: How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
+
+```{r}
+# Subsetting clean data reading for plotting. 
+
+phenology_plot <- clean_data %>%
+  filter(NativePollinator == 1) %>% 
+  group_by(Month, NativePlant) %>%
+  summarise(native_bee_abundance = n(), .groups = "drop") %>%
+  group_by(Month)%>% #total native bee obs per month
+  mutate(total_native_bees = sum(native_bee_abundance),
+         proportion = native_bee_abundance / total_native_bees) %>% #creating new column 'proportion' by dividing number of native bee observations by total number of bee observations for that month then can compare each month.
+  ungroup()
+
+phenology_plot
+
+```
+
+```{r}
+## Plotting data with ggplot.
+
+ggplot(phenology_plot, aes(x=Month, y=proportion,
+                           color = factor(NativePlant), group = NativePlant))+
+  geom_line(size = 0.5) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("darkorange","darkgreen"),
+                     labels = c("Non-native plant species", "Native plant species")) +
+  labs(x = "Month",
+       y = "Proportion of native pollinator observations",
+       color = "Type of plant on which\nthe pollinator was observed",
+       title = "Proportion of native pollinator observations\non native vs. non-native plants by month.") +
+  theme(axis.line = element_line(color = "black", size = 0.5))+
+  theme(legend.position = c(0.6,0.5))+
+  theme(text= element_text(size = 15))
+```
+
+Insert figure 4 
+
 
 Conclusion: (discussion kind of too?- "connect to relevant comparative literature")
 
