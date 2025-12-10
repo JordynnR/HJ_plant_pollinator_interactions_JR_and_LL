@@ -4,7 +4,9 @@ output: html_document
 date: "2025-12-05"
 bibliography: Bibliography.bib
 ---
-1. Introduction:
+
+## 1. Introduction:
+
   Invasive species are known to have a negative impact on native species and ecosystems around the world. Non-native plant invasions contribute to dwindling populations of native plant species that are ecologically and culturally important. Similarly, non-native pollinators can outcompete native species and contribute to population decline. This can further affect native plants that rely on native pollinators for efficient pollination if invasive species don’t replace the same functions. However, the specific effects invasions can have on plant-pollinator interactions can vary. A review paper by @Traveset_2006 explains that invasive pollinators can have little to no impact on highly specialized native plant-pollinator mutualisms because invasive pollinators tend to be generalists and will interact with a wider variety of plant species. Invasive plants can have more of an impact on these native mutualisms, especially if they are more attractive to native pollinators and outcompete native plants. A study by @Morales_2009  found that native or ‘alien’ species can negatively impact pollinator visitation rates and reproduction of native co-flowering focal species, which may contribute to their ability to dominate landscapes and alter plant community and structure. Invasive pollinators and plants may even interact with each other to have a greater impact on native plant-pollinator communities. For example, @Barthell_2001 investigated the interactions between an invasive bee, Apis mellifera, and an invasive plant, Centaurea solstitialis, and found that A. mellifera increases the reproductive success of C. solstitialis, suggesting that invasive plant-pollinator mutualisms could contribute to more successful plant invasions, further impacting native plant-pollinator interactions.
   With all of these variable effects, it is important to understand native plant-pollinator interactions locally in order to better predict how invasions may impact the community in a certain place. More specific place-based studies have investigated how invasive pollinators can impact native plant-pollinator communities, primarily due to competition with native pollinators. For example, @Dohzono_2008 found that a Japanese native bumblebee Bombus ardens visited a native plant, Corydalis ambigua, much less frequently when the invasive Bombus terrestris visited. This resulted in lower reproduction for the plant because B. terrestris robs nectar without contributing to pollination. Most of the research on invasive pollinators centers on the very successful Apis mellifera, or European honeybee, which has been brought all over the world to live alongside agricultural fields in order to pollinate crops and make honey. But their introduction into any ecosystem can have an impact on native bees and plants. For example, when @Thomson_2004 studied the interactions between a California native social bee, B. occidentalis, and A. mellifera, they found that B. occidentalis colonies located closer to A. mellifera hives had lower reproductive success, which could have a further impact on plant species that rely on this native bee. Another study by @Dupont_2004 focusing on the impact of A. mellifera found that these pollinators can disrupt native pollination networks by altering native bee foraging behaviours and increasing competition for nectar in flowering populations. Similarly in a meta-analysis paper, @Morales_2009 monitored visitation rate and reproductive success of native plant species located next to alien plant species. The paper proposed that the two most important properties of alien plant competition are floral abundance and the similarity of floral morphologies with native plants. The latter in particular can encourage native bees to pollinate non-natives, while specialist native plants are out-competed.  
   However, not all research has found a negative impact of invasive species on native plant-pollinator networks. In a study by @Borchardt_2025 on plant-pollinator interactions in prairie strips alongside agricultural fields in California, they found little to no impact of A. mellifera presence on native bee community composition from June to August. Similarly, @Spessa_1999 studied the impact of honeybee presence on a native colletid bee Amphylaeus morosus and detected no negative impact, concluding that nectar and pollen were not limiting for A. morosus and the null hypothesis was accepted, even though there was a resource overlap between the two study species. With the variable results from different studies, it stands to reason that different species of pollinator will be limited by different factors @Paini_2004.
@@ -12,16 +14,16 @@ bibliography: Bibliography.bib
   We aim to use this data to explore 3 main questions: (1) What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native? (2) Do non-native bees compete with native bees for access to native plants in these meadows? and (3) How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows? We first predict that native bees will more strongly associate with native plants in high-elevation meadows in Oregon. This is because native bees and plants have coexisted for longer and may have coevolved to be more specialized, especially in montane regions which have forced them to adapt to harsher conditions compared with other ecoregions. We also predict that there will be little to no significant change in native plant-pollinator relationships in the presence of non-native bees due to a low presence of non-native bees. We expect a lower presence of non-native bees because the montane study region may have environmental constraints that lead to native species easily out-competing non-native species that aren’t so well adapted and haven’t historically been introduced here like A. mellifera has in agricultural areas. Finally, we predict that native bees may shift to stronger associations with non-native plants later in the growing season due to potentially later blooming non-native species, while native species may bloom earlier.
   Our findings will provide insight into how invasive plants impact interactions between native plants and bees in high elevation meadows, whether there is interspecific competition for native plant resources between native and non-native bees in this ecosystem, and how these dynamics may be amplified or dampened over phenological time. The study of these interactions in this region is important because wilder areas have been understudied compared to urban and agricultural areas and plant-pollinator networks have been shown to react to invasion differently depending on the species and location. We need to better understand these interactions to track how potential future disturbances, such as invasions, may affect the structure of these communities.
 
-Methods: (include data steps, workflow, analysis steps/description)
+## 2. Data / Data wrangling:
 
-2. Data / Data wrangling:
+We used plant-pollinator interaction data collected from high-elevation meadows in the HJ Andrews experimental forest. It includes pollinator observations at different plant focals and data on focal plant and pollinator taxonomy, date of observations, site and plot of observations, and much more. We used the date and the plant and pollinator taxonomy data to answer questions surrounding plant-pollinator interactions. We also accessed the Oregon Flora and Calflora databases in determining whether plant species were native or not. Oregon Flora is a program owned by the department of Botany and Plant Pathology at Oregon State University and it aggregates data from multiple different partners that was collected by many different parties and people. Calflora is a non-profit database that also aggregates data from a wide variety of sources collected by many different parties and people. We used Copilot to reference these databases because they didn't have downloadable files including the native status data that we wanted to access. Once we had a list of the native species included in the HJ Andrews data, we created a new column for the native status of each plant species. We also created a new column for the native status of each pollinator species using a list of the most common non-native pollinator species given to us by our advisor.
 
-##read data in
+read in HJ Andrews data
+```{r}
 raw_data<- read.csv("raw_data/spec_net_copy.csv")
-
 ```
 
-##Get rid of unwanted columns, keep GenusSpecies, PlantGenusSpecies & Date.
+Get rid of unwanted columns, keep GenusSpecies, PlantGenusSpecies & Date.
 ```{r}
 library(tidyverse)
 library(dplyr)
@@ -35,7 +37,6 @@ kept_columns<- raw_data %>%
 ```
 
 transform date to month number
-
 ```{r}
 class(kept_columns) #test class= data frame
 
@@ -56,7 +57,7 @@ kept_columns$Month<- as.numeric(kept_columns$Month)
 class(kept_columns$Month)
 ```
 
-use regex to filter out spp/sp (unknown) species
+use regular expressions (regex) to filter out spp/sp (unknown) species
 ```{r}
 #test to see what pollinator species name are present
 unique(kept_columns$PollinatorGenusSpecies)
@@ -96,7 +97,7 @@ make column for native plants- 1 for native (TRUE), 0 for non-native (FALSE)
 ```{r}
 ##Use unique to pull out unique species in PlantGenusSpecies
 plant_species<- unique(no_unknown$PlantGenusSpecies)
-##copied and pasted this vector and asked copilot to reference Oregon Flora and Calflora to see which plant species listed in the vector are native and which are non-native
+##copied and pasted this vector and asked copilot to reference supplemental databases Oregon Flora and Calflora to see which plant species listed in the vector are native and which are non-native
 ##according to Oregon Flora and Calflora, two species has both a native version and introduced version from Eurasia: Achillea millefolium and Prunella vulgaris- decided to include them as natives because the species still counts as native
 ##there were also four species that are non-native: Rumex acetosella, Hypericum perforatum, Taraxacum officinale, Vicia sativa
 
@@ -160,6 +161,7 @@ w_native_pollinators<- w_native_plants %>%
 #check that values came out right
 unique(w_native_pollinators$NativePollinator)
 ```
+
 check final dataframe and export file to repository
 ```{r}
 print(w_native_pollinators)
@@ -174,24 +176,348 @@ re_ordered
 write.csv(re_ordered, "clean_data/HJ_data.csv", row.names = TRUE)
 
 ```
-3. Data Analysis / Hypothesis testing 
- 
- Interaction data: group species by type (plant vs. pollinator) and native 
-status; create flow interaction network
 
- Permutation test: ran AB test to test for a difference in native pollinator 
-observations between native vs. non-native plants
+## 3. Analyses and Visualizations
 
- Pollinator competition: group by plant species; graph native bee 
-observations by non-native bee observations
-
- Native bee preference over time: group by type of plant visited (native or 
-non-native); plot proportion of observations to each type per month
+We ran four major analyses to answer our three main questions. The first two analyses help us answer question 1: What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native? First, we created two interaction networks to visualize the strength of interactions between plant and pollinator species. We grouped the species by native status to see if there was a visual difference in whether native pollinators interacted more with native or non-native plants. Second, we ran a hypothesis test to see if the difference in native pollinator interactions with native vs. non-native plants was significant. The third analysis helps us answer question 2: Do non-native bees compete with native bees for access to native plants in high elevation meadows? To address this, we grouped observations by plant species and plotted native pollinator observations by non-native pollinator observations to see if non-native presence pollinator correlated with a decrease in native presence. Our fourth analysis helps us answer question 3: How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows? To see if there was a clear preference for native pollinators and if it changed over time, we grouped observations by the native status of the plant visited and plotted the proportion of total visits each month that occurred to native plants vs. non-native plants.
 
 
-4. Visualisations 
+### A. Answering research question 1: What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native?
 
-Research question 2:Do non-native bees compete with native bees for access to native plants in high elevation meadows?
+**Analysis of interaction data: group species by type (plant vs. pollinator) and native status; create 2 sankey interaction networks- one broken down by species and one that just shows the groups**
+
+read in cleaned data
+```{r}
+clean_data<- read.csv("clean_data/HJ_data.csv")
+```
+
+keep only plant and pollinator species columns
+```{r}
+library(tidyr)
+library(dplyr)
+
+##select only relevant columns- PollinatorGenusSpecies and PlantGenusSpecies
+interactions<- clean_data %>%
+  select(PollinatorGenusSpecies, PlantGenusSpecies)
+```
+
+convert data frame into biadjacency matrix
+```{r}
+## table the dataframe to sum up interactions between each plant and pollinator species and unclass it as a table so it is recognized as a matrix
+interactions_adj<- unclass(table(interactions))
+
+#check class- should be matrix
+class(interactions_adj)
+```
+
+convert matrix to igraph object
+```{r}
+library(igraph)
+
+## convert regular adjacency matrix to igraph bipartite adjacency matrix
+# use weight=TRUE to preserve the strength of interactions (when there is more than 1 observation of a bee species interacting with a given plant species)
+interactions_igraph <- graph_from_biadjacency_matrix(interactions_adj, weight=TRUE)
+
+# check class- should be igraph
+class(interactions_igraph)
+```
+
+convert igraph to a network 3d object
+```{r}
+library(networkD3)
+
+###make meaningful groups- Native vs. non-native pollinators and plants
+## create a vector of all the node names in the igraph object
+node_names <- V(interactions_igraph)$name
+
+## combine species names from both plant and pollinator columns to have one dataframe of all species names and native status
+#create separate dataframe of just pollinator species and native status
+pol_sp<- data.frame(
+  species= clean_data$PollinatorGenusSpecies, 
+  native= clean_data$NativePollinator, 
+  type= "Pollinator"
+)
+
+#create separate dataframe of just plant pollinator species and native status
+plant_sp<- data.frame(
+  species= clean_data$PlantGenusSpecies, 
+  native= clean_data$NativePlant, 
+  type= "Plant"
+)
+
+#combine into one dataframe of all species and native status
+combined_species<- rbind(pol_sp,plant_sp)
+
+#match combined_species to node_names so each species name is only listed once
+match_to_og_df <- combined_species[match(node_names, combined_species$species), ]
+
+##make groups based on a species type and native status
+groups <- ifelse(match_to_og_df$native == 1 & match_to_og_df$type=="Pollinator",
+                 "Native Pollinator",
+          ifelse(match_to_og_df$native == 0 & match_to_og_df$type=="Pollinator",
+                 "Non-native Pollinator",
+          ifelse(match_to_og_df$native == 1 & match_to_og_df$type=="Plant",
+                 "Native Plant", "Non-native Plant")))
+
+### convert igraph to a network 3d object, using the modules as node values
+interactions_net3d <- igraph_to_networkD3(interactions_igraph, group=groups, 
+                                       what = "both")
+
+## check that it has two list items to use for network visualization- links and nodes
+str(interactions_net3d)
+```
+
+make network visualization- we chose the Sankey plot
+```{r}
+all_species_network<- sankeyNetwork(Links = interactions_net3d$links,
+             Nodes = interactions_net3d$nodes,
+            Source = "source", Target = "target",
+            Value = "value",  NodeID = "name", 
+            NodeGroup= "group", fontSize=15,
+            nodePadding = 0, height = 1400, width=450)
+```
+
+insert visual
+```{r, echo=TRUE}
+all_species_network
+```
+Figure 1. Interaction network of all pollinator and plant species present in the HJ Andrews dataset, grouped by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue.
+
+
+We also created a simplified network that groups species by whether they are native or not to more easily view the groups.
+
+create network of just native vs non-native plant-pollinator interactions
+```{r}
+#select native and non-native plant and pollinator columns in order to group their interactions
+int<- clean_data %>%
+  select(NativePollinator, NativePlant)
+```
+
+convert data frame into adjacency matrix
+```{r}
+## table the dataframe to sum up interactions between native and non-native plant and pollinator species and unclass it as a table so it is recognized as a matrix
+int_table<- table(int)
+
+# unclass it as a table so it is recognized as a matrix
+# the first variable in the table becomes rows and second becomes columns
+int_adj<- unclass(int_table)
+
+##reorder columns and rows so group orders match other interaction network later
+reordered_int_adj <- int_adj[c(2, 1), c(2,1)]
+
+## check Int_adj and reordered_int_adj to make sure values still match and see which columns becomes which side of the adjacency matrix- found that the columns represents pollinators and the rows represent plants
+int_adj
+reordered_int_adj
+
+## rename column and row names so they more accurately describe what they are showing
+colnames(reordered_int_adj) <- c("Native Plants", "Non-native Plants")
+rownames(reordered_int_adj) <- c("Native Pollinators", "Non-native Pollinators")
+
+#check that the new column and row names match the label
+reordered_int_adj
+```
+
+convert to igraph object
+```{r}
+#preserve weight (strength of interactions)
+int_igraph <- graph_from_biadjacency_matrix(reordered_int_adj, weight=TRUE)
+```
+
+convert to network 3d object
+```{r}
+### convert igraph to a network 3d object, not necessary to group because there are only 4 categories and we can easily see them all
+int_net3d <- igraph_to_networkD3(int_igraph, 
+                                       what = "both")
+```
+
+create network visualization
+```{r}
+##uses int_net3d links and nodes, grouping by native and non-native plants and pollinators
+native_network<- sankeyNetwork(Links = int_net3d$links,
+             Nodes = int_net3d$nodes,
+            Source = "source", Target = "target",
+            Value = "value",  NodeID = "name",
+            fontSize= 14,
+            nodePadding = 0, height = 500, width=250)
+```
+
+insert visual
+```{r, echo=TRUE}
+native_network
+```
+Figure 2. Simplified interaction network of grouped pollinator and plant species by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue.
+
+
+**AB test: test for a significant difference in native pollinator observations between native vs. non-native plants**
+
+Null hypothesis: there is no difference in native bee abundance between between native and non-native plants.
+
+Alternative hypothesis: there is a significant difference in native bee abundance at native plants versus non-native plants.
+
+Test statistic: the difference between the average native bee observations per species between native plant species and non-native plant species.
+
+read in data and library
+```{r}
+library(tidyverse)
+
+clean_data<- read.csv("clean_data/HJ_data.csv")
+```
+
+filter out non-native pollinators because we are only testing native pollinators
+```{r}
+#only keep columns relevant to this test- 
+native_bees<- clean_data %>%
+  filter(NativePollinator==1) %>%
+  select(PollinatorGenusSpecies, PlantGenusSpecies, NativePlant)
+#now all pollinators included are native so we don't need the NativePollinator column
+```
+
+figure out how to calculate observed stat
+```{r}
+## number of bee observations per plant species
+# will use this dataframe for shuffling labels
+observations_by_plant<- native_bees %>%
+  group_by(PlantGenusSpecies, NativePlant) %>%
+  summarize(abundance= n(), .groups="drop")
+
+## find average number of interactions per species based on group (native vs. non-native)
+av_interactions<- observations_by_plant %>%
+  group_by(NativePlant) %>%
+  summarize(mean_interactions= mean(abundance), .groups="drop")
+
+#find difference between them
+# average number of interactions for a native species - average number of interactions for a non-native species
+observed_stat <- abs(av_interactions$mean_interactions[av_interactions$NativePlant=="1"] - av_interactions$mean_interactions[av_interactions$NativePlant=="0"])
+
+observed_stat ## 88.63158
+```
+
+create function to calculate observed stat using above calculations
+```{r}
+### this function calculates the observed statistic by first finding the average of observations per species for both native and non-native groups of plant species
+calc_statistic<- function(df){
+  #first find the average abundance for species based on group (native or non-native plants)
+  df2<- df %>%
+    group_by(NativePlant) %>%
+    summarize(mean=mean(abundance), .groups="drop")
+  #next calculate observed statistic= the difference between average abundances of each group
+  obs_stat <- abs(df2$mean[df2$NativePlant=="1"]- df2$mean[df2$NativePlant=="0"])
+  return(obs_stat)
+  }
+
+
+## test it works- should match observed statistic above of 88.63158; it does
+calc_statistic(observations_by_plant)
+```
+
+figure out shuffling and running one test
+```{r}
+## for reproducibility
+set.seed(123)
+
+##shuffle label column from observations_by_plant to shuffle whether a given species is native or not
+by_species_shuffle <-  sample(observations_by_plant$NativePlant, 
+                         nrow(observations_by_plant), replace=FALSE)
+
+## create data frame to use for test without altering og
+by_species_test<- observations_by_plant
+
+#create new column with shuffled labels
+by_species_test$NativePlantShuffled<- by_species_shuffle
+
+#check that the column was added
+head(by_species_test)
+
+### new function for calculating test statistic with shuffled column instead of the original NativePlant column
+### this function calculates the test statistic. It functions the same way as the calc_stat function except it uses the re-shuffled NativePlantShuffled labels instead of the original NativePlant labels that the first function used to calculate the observed statistic.
+calc_stat_shuffled<- function(df){
+  #first find the average abundance for species based on group with shuffled labels (native or non-native plants)
+  df2<- df %>%
+    group_by(NativePlantShuffled) %>%
+    summarize(mean=mean(abundance), .groups="drop")
+  #next calculate test statistic= the difference between averages observations per group
+  stat <- abs(df2$mean[df2$NativePlantShuffled=="1"]- df2$mean[df2$NativePlantShuffled=="0"])
+  return(stat)
+  }
+
+#test with by_species_test after it's been shuffled once, run whole cell a few times to ensure this gives different numbers: it does
+calc_stat_shuffled(by_species_test)
+```
+
+create function for shuffling labels and calculating test statistic from that using above manipulation and the calc_stat_shuffled function
+```{r}
+## for reproducibility
+set.seed(123)
+
+### this function creates a vector of shuffled labels from the NativePlant column from a given dataframe and adds that vector to a new column in the dataframe. It then calculates a test statistic given the newly re-shuffled lables in the dataframe using the calc-stat-shuffled function defined above.
+run_one_test<- function(df){
+  #first create a vector of shuffled labels (native or non-native plant) from the NativePlant column, without replacing values after they were sampled and making it the same length as the original NativePlant column so the same number of native and non-native labels are present
+  shuffled_labels<- sample(df$NativePlant,
+                           nrow(df), replace=FALSE)
+  # next add the shuffled vector back to the dataframe
+  df$NativePlantShuffled<- shuffled_labels
+  # finally calculate the new test statistic from the shuffled labels using the calc_stat_shuffled function
+  test_stat<- calc_stat_shuffled(df)
+  return(test_stat)
+}
+
+## test function- run a couple times to ensure we get different results: we do
+run_one_test(observations_by_plant)
+```
+
+create and run for loop to shuffle and calculate test statistic 1000 times
+```{r}
+## set up empty vector to fill with test statistic values
+test_stats<- vector(mode="numeric", length=0)
+
+### this for loop runs 1000 permutation tests using the run_one_test function defined above and adds each value to an originally empty vector of test statistics
+for (i in 1:1000){
+  # first run a permuation test with the run_one_test function to get a test statistic back
+  one_test<- run_one_test(observations_by_plant)
+  # next add that new test statistic to the test_stats vector
+  test_stats<- append(test_stats, one_test)
+}
+
+## look at vector to see if it filled- it is
+test_stats[1:10]
+
+## test it contains numeric values- it does
+class(test_stats)
+```
+
+find p-value
+```{r}
+## calculate p-value
+# how probable that test stats are equal to observed or farther in direction of alt hypothesis
+p_val <- mean(abs(test_stats) >= abs(observed_stat))
+p_val
+
+## gives 0.584= not significant
+```
+
+plot histogram of test statistics and observed statistic to visualize if there is a difference
+```{r}
+## turn test_stats vector into a dataframe to plot
+test_stats_df<- as.data.frame(test_stats)
+
+##plot histogram- results from for loop AND observed test statistic
+test_hist<- ggplot(test_stats_df) +
+  geom_histogram(aes(x=test_stats)) +
+  labs(x="Test Statistic Value", y="Number of Cases", title="Test Statistic Distribution") +
+  geom_point(aes(x=observed_stat, y=0),color="red")
+```
+
+insert histogram
+```{r, echo=TRUE}
+test_hist
+```
+Figure 3. Distribution of test statistics after running AB simulation 1000 times. Observed statistic is included as a red dot for comparison.
+
+
+### B. Answering research question 2: Do non-native bees compete with native bees for access to native plants in high elevation meadows?
+
+**Analysis of pollinator competition: group by plant species; graph native bee observations by non-native bee observations**
+
 ```{r}
 #loading in cleaned data file
 
@@ -229,7 +555,7 @@ table(plants$non_nativebee_count)
 
 ```
 
-```{r, warning = FALSE}
+```{r, echo=TRUE}
 #creating scatter plot to compare abundances at each species of plant
 
 ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(NativePlant)))+
@@ -246,10 +572,10 @@ ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(
   facet_wrap(~NativePlant, scale = "free_x") 
   
 ```
+Figure 4. 
 
-Insert figure 2
 
-```{r}
+```{r, echo=TRUE}
 #creating second zoomed in plot
 
 ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(NativePlant)))+
@@ -265,10 +591,12 @@ ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(
   theme(legend.position = c(0.7,0.8))+
   theme(text= element_text(size = 15))
 ```
+Figure 5. 
 
-Insert figure 3 
 
-Creating the phenology line plot for research question 3: How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
+### C. Answering research question 3: How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
+
+**Analysis of native pollinator preference over time: group by type of plant visited (native or non-native); plot proportion of observations to each type per month**
 
 ```{r}
 # Subsetting clean data reading for plotting. 
@@ -283,10 +611,9 @@ phenology_plot <- clean_data %>%
   ungroup()
 
 phenology_plot
-
 ```
 
-```{r}
+```{r, echo=TRUE}
 ## Plotting data with ggplot.
 
 ggplot(phenology_plot, aes(x=Month, y=proportion,
@@ -303,9 +630,9 @@ ggplot(phenology_plot, aes(x=Month, y=proportion,
   theme(legend.position = c(0.6,0.5))+
   theme(text= element_text(size = 15))
 ```
+Figure 6. 
 
-Insert figure 4 
 
+## 4. Conclusion: (discussion kind of too?- "connect to relevant comparative literature")
 
-Conclusion: (discussion kind of too?- "connect to relevant comparative literature")
 
