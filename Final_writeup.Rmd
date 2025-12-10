@@ -1,9 +1,13 @@
 ---
-title: "Final_write-up"
+title: "Final_write-up for BI 410L: Data Science in Ecology"
+author: 
+  - "Jordynn Risdal"
+  - "Lily Lawrence"
 output: html_document
 date: "2025-12-05"
 bibliography: Bibliography.bib
 ---
+# Native Plant-Pollinator Interactions in High Elevation Oregon Meadows
 
 ## 1. Introduction:
 
@@ -164,13 +168,13 @@ unique(w_native_pollinators$NativePollinator)
 
 check final dataframe and export file to repository
 ```{r}
-print(w_native_pollinators)
+str(w_native_pollinators)
 
 #reorder columns
 re_ordered<- w_native_pollinators %>%
   select(Month, PollinatorGenusSpecies, NativePollinator, PlantGenusSpecies, NativePlant)
 
-re_ordered
+head(re_ordered)
 
 #export to folder in repository called clean_data (this folder needs to be created locally)
 write.csv(re_ordered, "clean_data/HJ_data.csv", row.names = TRUE)
@@ -184,7 +188,7 @@ We ran four major analyses to answer our three main questions. The first two ana
 
 ### A. Answering research question 1: What plants do native bees more strongly associate with in high-elevation meadows in Oregon? Are they more often native or non-native?
 
-**Analysis of interaction data: group species by type (plant vs. pollinator) and native status; create 2 sankey interaction networks- one broken down by species and one that just shows the groups**
+####Analysis of interaction data: group species by type (plant vs. pollinator) and native status; create 2 sankey interaction networks- one broken down by species and one that just shows the groups
 
 read in cleaned data
 ```{r}
@@ -348,7 +352,7 @@ native_network
 Figure 2. Simplified interaction network of grouped pollinator and plant species by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue.
 
 
-**AB test: test for a significant difference in native pollinator observations between native vs. non-native plants**
+####AB test: test for a significant difference in native pollinator observations between native vs. non-native plants
 
 Null hypothesis: there is no difference in native bee abundance between between native and non-native plants.
 
@@ -516,14 +520,14 @@ Figure 3. Distribution of test statistics after running AB simulation 1000 times
 
 ### B. Answering research question 2: Do non-native bees compete with native bees for access to native plants in high elevation meadows?
 
-**Analysis of pollinator competition: group by plant species; graph native bee observations by non-native bee observations**
+####Analysis of pollinator competition: group by plant species; graph native bee observations by non-native bee observations
 
 ```{r}
 #loading in cleaned data file
 
 clean_data <- read.csv("clean_data/HJ_data.csv")
 
-clean_data
+head(clean_data)
 ```
 
 ```{r}
@@ -596,7 +600,7 @@ Figure 5.
 
 ### C. Answering research question 3: How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
 
-**Analysis of native pollinator preference over time: group by type of plant visited (native or non-native); plot proportion of observations to each type per month**
+####Analysis of native pollinator preference over time: group by type of plant visited (native or non-native); plot proportion of observations to each type per month
 
 ```{r}
 # Subsetting clean data reading for plotting. 
@@ -636,3 +640,4 @@ Figure 6.
 ## 4. Conclusion: (discussion kind of too?- "connect to relevant comparative literature")
 
 
+## 5. References
