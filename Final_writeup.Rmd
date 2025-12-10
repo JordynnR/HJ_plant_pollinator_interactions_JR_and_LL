@@ -576,7 +576,7 @@ ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(
   facet_wrap(~NativePlant, scale = "free_x") 
   
 ```
-Figure 4. 
+Figure 4. Non-native (orange) and native (green) pollinators plotted side by side. Native bee abundances show lots of variation. 
 
 
 ```{r, echo=TRUE}
@@ -595,7 +595,7 @@ ggplot(plants, aes(x = non_nativebee_count, y = nativebee_count, color = factor(
   theme(legend.position = c(0.7,0.8))+
   theme(text= element_text(size = 15))
 ```
-Figure 5. 
+Figure 5. This plot is a zoomed in version of this data, removing two plant species that skewed the data. We removed these two plant species for this plot as they had high abundances of both native and non-native pollinators relative to the other 118 plant species, which masked any other trend or pattern of pollinator abundances existing within the majority of plant species. 
 
 
 ### C. Answering research question 3: How do the interactions between native bees and their preferred plants change over the growing season in high-elevation meadows?
@@ -634,11 +634,13 @@ ggplot(phenology_plot, aes(x=Month, y=proportion,
   theme(legend.position = c(0.6,0.5))+
   theme(text= element_text(size = 15))
 ```
-Figure 6. 
+Figure 6. Line plot showing the proportion of native pollinator observations on native vs non-native pants by month. 
 
 
 ## 4. Conclusion: (discussion kind of too?- "connect to relevant comparative literature")
   In our results, we largely did not find what we expected to find. We expected that there would be a clear native pollinator preference for native plants, but our results suggest that the answer is more complicated. We also expected that non-native pollinator presence would negatively impact native pollinator presence, but we actually found a slight positive relationship, suggesting that competition may not be as important in the study system. Finally, we expected that there would be a shift in native pollinator preference towards non-native plants later in the season, and we found a slight increase in non-native plant interactions, but it was very weak and there was still an overwhelming proportion of interactions with native plants.
   When we ran our hypothesis test for native pollinator plant preference, we found a p-value of 0.584, suggesting no significant difference in native vs. non-native plant preference among native pollinators. However, in Figure 2, we can see that there are visibly many more interactions with native plants compared to non-native plants. These seemingly conflicting results may be explained by the math used to calculate the test statistic in our hypothesis test. We took the difference of two averages for our statistic, which were the averages of native pollinator interactions for a given species, for both native and non-native plant species. This may have masked a potential preference for native plant species due to the fact that only four non-native plant species were present in the data, compared to 120 native plant species. Additionally, as we can see in Figure 1, only one of the non-native species, Hypericum perforatum, represented the majority of native-pollinator interactions at 854, while the other three non-natives represented less than 30 interactions each. This may have skewed the non-native average and subsequently the test statistic. However, we can also see in Figure 1 that only a few native plant species, such as Gilia capitata and Delphinium menziezii, represent over 1,000 native pollinator interactions each, while other native plant species represent in the hundreds or only in the tens of interactions. As such, looking at the overall preference between native vs. non-native plant preference may obscure some of the more specific preference for specific plants, some of which may be native and some of which may be non-native, like Hypericum perforatum. Another possible explanation for the difference between Figure 2 and our hypothesis test is that there really is no significant preference for native vs. non-native plants. Figure 2 may show many more native plant interactions due to the fact that there were many more native plants and species present for native pollinators to interact with while not many non-native plants were there. In order to better understand potential reasons for these seemingly conflicting results, we could break down our interaction data by site and year and compare to plant abundance data in the same site and year to see if the presence of more or fewer non-native plant individuals impacts plant preference for native pollinators.
+  With respect to pollinator competition, analysing both plots (figures 4 and 5), we can see a slight increase in native pollinator abundance with non-native pollinator presence. This goes against our predictions, and may suggest that flora is abundant enough to meet the demands of both native and non-native pollinators up in high elevation meadows. From this data of pollinator visitation, it does not suggest that non-native bees are displacing or out competing native bees. It is important to reiterate there were only 4 non-native plants present in this data set, which are shown by the orange line. 3 out of 4 non-native plant species had native pollinator abundances below the smoothed line of the native plants, displaying a smaller range of pollinator abundances. 
+  As shown in figure 5, our results suggest that interactions of native pollinators with native vs. non-native plants stay relatively consistent over the growing season. A much higher proportion of native pollinators were observed at native plants compared to non-native plants. Peak observations on non-native plants were observed in the month of august, which coincides with a dip in the proportion of native pollinator observations on native plants. This may suggest that despite the lower number of non-native plants in this data, they have somewhat of an impact on the proportion of pollinator visitations. A reason for this could be that non-native plants reach peak reward later in the season, for example more pollinator attraction to peak nectar and pollen. 
 
 ## 5. References
