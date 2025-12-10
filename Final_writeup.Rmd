@@ -285,7 +285,7 @@ insert visual
 ```{r, echo=TRUE}
 all_species_network
 ```
-Figure 1. Interaction network of all pollinator and plant species present in the HJ Andrews dataset, grouped by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue.
+Figure 1. Interaction network of all pollinator and plant species present in the HJ Andrews dataset, grouped by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue. There are only a few non-native pollinator species that make up about the same amount of interactions as a much higher number of native pollinator species. There are a lot more species of native plants that make up the large majority of plant interactions compared to non-native plants.
 
 
 We also created a simplified network that groups species by whether they are native or not to more easily view the groups.
@@ -349,7 +349,7 @@ insert visual
 ```{r, echo=TRUE}
 native_network
 ```
-Figure 2. Simplified interaction network of grouped pollinator and plant species by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue.
+Figure 2. Simplified interaction network of grouped pollinator and plant species by native status. Pollinators are on the left and plants are on the right. Native species are darker blue and non-native species are lighter blue. There are a fairly even number of interactions for native vs. non-native pollinators, but there is a much smaller number of interactions with non-native plants compared to native plants.
 
 
 ####AB test: test for a significant difference in native pollinator observations between native vs. non-native plants
@@ -515,7 +515,7 @@ insert histogram
 ```{r, echo=TRUE}
 test_hist
 ```
-Figure 3. Distribution of test statistics after running AB simulation 1000 times. Observed statistic is included as a red dot for comparison.
+Figure 3. Distribution of test statistics after running AB simulation 1000 times. Observed statistic is included as a red dot for comparison. Results are not significant with a p-value of 0.584. We fail to reject the null hypothesis that there is no difference in plant preference for native pollinators.
 
 
 ### B. Answering research question 2: Do non-native bees compete with native bees for access to native plants in high elevation meadows?
